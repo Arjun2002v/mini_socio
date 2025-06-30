@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const { mongo, default: mongoose } = require("mongoose");
 
 const post = new mongoose.Schema({
   content: {
@@ -14,5 +14,14 @@ const post = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
   },
+  likes: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "post",
+  },
+  comment: {
+    type: String,
+    ref: "post",
+  },
 });
+
 module.exports = mongoose.model("post", post);

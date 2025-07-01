@@ -1,5 +1,6 @@
 const { param } = require("../routes/authRoutes");
 const post = require("../Schema/post");
+const { find, findById } = require("../Schema/user");
 
 //Get all Posts Logic
 
@@ -94,5 +95,18 @@ exports.unlike = async (req, res) => {
   } catch (error) {
     console.error("Error Unliking post:", error);
     return res.status(500).json({ message: "Internal server error", error });
+  }
+};
+
+exports.getSpecificPost = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const getPosts = await findById(id);
+    if (!getPosts) {
+      res.sendStatus(201).json({ message: "There are no Post recently" });
+    }
+    res.sendStatus(201).json({ message: "Here are your specified post" });
+  } catch (error) {
+    res.send(500).json({ message: "Internal Server Error" });
   }
 };

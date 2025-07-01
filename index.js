@@ -9,6 +9,7 @@ const {
   editPost,
   likePost,
   unlike,
+  getSpecificPost,
 } = require("./Controllers/PostController");
 require("dotenv").config();
 const app = express();
@@ -27,15 +28,17 @@ app.post("/login", router);
 
 app.get("/post", getPost);
 
-app.post("/post/create", createPost);
+app.post("/posts", createPost);
 
-app.delete("/post/delete/:id", deletePost);
+app.delete("/posts/:id", deletePost);
 
-app.patch("/post/edit/:id", editPost);
+app.patch("/posts/:id", editPost);
 
-app.patch("/post/like/:id", likePost);
+app.post("/posts/:id/like", likePost);
 
-app.patch("/post/unlike/:id", unlike);
+app.delete("/posts/:id/unlike", unlike);
+
+app.get("/post/:id", getSpecificPost);
 
 app.listen(PORT, () => {
   console.log(`Running on Server ,${PORT}`);

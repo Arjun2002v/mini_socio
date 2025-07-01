@@ -2,6 +2,11 @@ const express = require("express");
 
 const connectDB = require("./Database/Mongo");
 const router = require("./routes/authRoutes");
+const {
+  createPost,
+  getPost,
+  deletePost,
+} = require("./Controllers/PostController");
 require("dotenv").config();
 const app = express();
 
@@ -13,14 +18,15 @@ if (!connectDB) {
 }
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
-
 app.post("/signup", router);
 
 app.post("/login", router);
 
+app.get("/post", getPost);
+
+app.post("/post/create", createPost);
+
+app.delete("/post/delete/:id", deletePost);
 app.listen(PORT, () => {
   console.log(`Running on Server ,${PORT}`);
 });

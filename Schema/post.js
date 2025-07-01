@@ -8,6 +8,7 @@ const post = new mongoose.Schema({
   media: [
     {
       type: String,
+      required: true,
     },
   ],
   createdBy: {

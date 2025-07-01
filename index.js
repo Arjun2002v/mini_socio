@@ -6,6 +6,9 @@ const {
   createPost,
   getPost,
   deletePost,
+  editPost,
+  likePost,
+  unlike,
 } = require("./Controllers/PostController");
 require("dotenv").config();
 const app = express();
@@ -27,6 +30,13 @@ app.get("/post", getPost);
 app.post("/post/create", createPost);
 
 app.delete("/post/delete/:id", deletePost);
+
+app.patch("/post/edit/:id", editPost);
+
+app.patch("/post/like/:id", likePost);
+
+app.patch("/post/unlike/:id", unlike);
+
 app.listen(PORT, () => {
   console.log(`Running on Server ,${PORT}`);
 });

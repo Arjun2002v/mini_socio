@@ -120,3 +120,19 @@ exports.getUser = async (req, res) => {
     res.send({ users }).sendStatus(201);
   }
 };
+
+//Follows Logic
+
+exports.follow = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    await user.findByIdAndUpdate(userId, {
+      $addToSet: { followers: req.user.userId },
+    });
+
+    res.status(201).json({ message: "New follower added" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};

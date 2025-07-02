@@ -11,6 +11,7 @@ const {
   unlike,
   getSpecificPost,
   getUser,
+  follow,
 } = require("./Controllers/PostController");
 require("dotenv").config();
 const app = express();
@@ -42,6 +43,8 @@ app.delete("/posts/:id/unlike", unlike);
 app.get("/users", getUser);
 
 app.get("/posts/users/:id", getSpecificPost);
+
+app.post("/follows/:userId", follow);
 
 app.listen(PORT, () => {
   console.log(`Running on Server ,${PORT}`);

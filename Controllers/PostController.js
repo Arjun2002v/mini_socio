@@ -1,18 +1,19 @@
 const { param } = require("../routes/authRoutes");
 const post = require("../Schema/post");
+const user = require("../Schema/user");
 const { find, findById } = require("../Schema/user");
 
 //Get all Posts Logic
 
 exports.getPost = async (req, res) => {
-  const posts = await post.find();
+  const posts = await post.find().populate("createdBy", "name");
   res.send(posts);
 };
 
 //Create a Post Logic
 
 exports.createPost = async (req, res) => {
-  const { content, media } = req.body;
+  const { content, media, userId } = req.body;
 
   if (!content) {
     res.json({ message: "Content is required" }).sendStatus(201);
@@ -23,6 +24,7 @@ exports.createPost = async (req, res) => {
   const newPost = await post({
     content,
     media: media || [],
+    createdBy: userId,
   });
 
   await newPost.save();
@@ -101,12 +103,20 @@ exports.unlike = async (req, res) => {
 exports.getSpecificPost = async (req, res) => {
   const { id } = req.params;
   try {
-    const getPosts = await findById(id);
-    if (!getPosts) {
-      res.sendStatus(201).json({ message: "There are no Post recently" });
-    }
-    res.sendStatus(201).json({ message: "Here are your specified post" });
+    const postDoc = await post.find({ createdBy: id });
+
+    return res.status(200).json(postDoc);
   } catch (error) {
-    res.send(500).json({ message: "Internal Server Error" });
+    console.error("Error fetching post:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+exports.getUser = async (req, res) => {
+  const users = await user.find();
+  if (user.length === 0) {
+    res.json({ message: "No users Found" }).sendStatus(201);
+  } else {
+    res.send({ users }).sendStatus(201);
   }
 };

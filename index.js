@@ -10,6 +10,7 @@ const {
   likePost,
   unlike,
   getSpecificPost,
+  getUser,
 } = require("./Controllers/PostController");
 require("dotenv").config();
 const app = express();
@@ -26,7 +27,7 @@ app.post("/signup", router);
 
 app.post("/login", router);
 
-app.get("/post", getPost);
+app.get("/posts", getPost);
 
 app.post("/posts", createPost);
 
@@ -38,7 +39,9 @@ app.post("/posts/:id/like", likePost);
 
 app.delete("/posts/:id/unlike", unlike);
 
-app.get("/post/:id", getSpecificPost);
+app.get("/users", getUser);
+
+app.get("/posts/users/:id", getSpecificPost);
 
 app.listen(PORT, () => {
   console.log(`Running on Server ,${PORT}`);

@@ -13,6 +13,7 @@ const {
   getUser,
   follow,
 } = require("./Controllers/PostController");
+const verifyToken = require("./middleWare/authMiddle");
 require("dotenv").config();
 const app = express();
 
@@ -26,26 +27,26 @@ app.use(express.json());
 
 app.post("/signup", router);
 
-app.post("/login", router);
+app.post("/login", verifyToken, router);
 
-app.get("/posts", getPost);
+app.get("/posts", verifyToken, getPost);
 
-app.post("/posts", createPost);
+app.post("/posts", verifyToken, createPost);
 
-app.delete("/posts/:id", deletePost);
+app.delete("/posts/:id", verifyToken, deletePost);
 
-app.patch("/posts/:id", editPost);
+app.patch("/posts/:id", verifyToken, editPost);
 
-app.post("/posts/:id/like", likePost);
+app.post("/posts/:id/like", verifyToken, likePost);
 
-app.delete("/posts/:id/unlike", unlike);
+app.delete("/posts/:id/unlike", verifyToken, unlike);
 
 app.get("/users", getUser);
 
-app.get("/posts/users/:id", getSpecificPost);
+app.get("/posts/users/:id", verifyToken, getSpecificPost);
+app.get("/verify", verifyToken);
+app.post("/follows/:userId", verifyToken, follow);
 
-app.post("/follows/:userId", follow);
-
-app.listen(PORT, () => {
-  console.log(`Running on Server ,${PORT}`);
+app.listen(5000, () => {
+  console.log("Running on 500");
 });

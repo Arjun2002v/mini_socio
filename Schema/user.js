@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
   password: {
     type: String,
     required: true,
@@ -13,10 +14,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-  followers: {
-    type: Number,
-    default: 0,
-  },
+  followers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+
   bio: {
     type: String,
     default: "",

@@ -127,12 +127,25 @@ exports.follow = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    await user.findByIdAndUpdate(userId, {
-      $addToSet: { followers: req.user.userId },
-    });
+    if (!userId || !req.user?._id) {
+      return res.status(400).json({ message: "No user found" });
+    }
 
-    res.status(201).json({ message: "New follower added" });
+    if (userId === req.user._id.toString()) {
+      return res.status(400).json({ message: "You can't follow yourself" });
+    }
+
+    await user.findByIdAndUpdate(
+      userId,
+      {
+        $addToSet: { followers: req.user._id },
+      },
+      { new: true }
+    );
+
+    return res.status(201).json({ message: "New follower added" });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("Follow error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };

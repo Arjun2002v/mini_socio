@@ -21,12 +21,16 @@ router.post("/signup", async (req, res) => {
 
     await newUser.save();
 
-    const token = jwt.sign({ name: newUser.name }, process.env.JWT_SECRET, {
-      expiresIn: "24h",
-    });
+    const token = jwt.sign(
+      { _id: newUser._id, name: newUser.name, avatar: newUser.avatar },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
 
     res.cookie("token", token, { httpOnly: true, maxAge: 24 * 60 * 1000 });
-    res.send("User created").sendStatus(201);
+    res.json({ token }).sendStatus(201);
   }
 });
 

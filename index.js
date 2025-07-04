@@ -12,6 +12,7 @@ const {
   getSpecificPost,
   getUser,
   follow,
+  following,
 } = require("./Controllers/PostController");
 const verifyToken = require("./middleWare/authMiddle");
 require("dotenv").config();
@@ -44,8 +45,12 @@ app.delete("/posts/:id/unlike", verifyToken, unlike);
 app.get("/users", getUser);
 
 app.get("/posts/users/:id", verifyToken, getSpecificPost);
+
 app.get("/verify", verifyToken);
+
 app.post("/follows/:userId", verifyToken, follow);
+
+app.get("/following", following);
 
 app.listen(5000, () => {
   console.log("Running on 500");

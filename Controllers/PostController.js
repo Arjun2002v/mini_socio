@@ -143,6 +143,12 @@ exports.follow = async (req, res) => {
       { new: true }
     );
 
+    await user.findByIdAndUpdate(
+      req.user?._id,
+      { following: userId },
+      { new: true }
+    );
+
     return res.status(201).json({ message: "New follower added" });
   } catch (error) {
     console.error("Follow error:", error);

@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
 
   bio: {
     type: String,

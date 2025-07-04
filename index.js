@@ -14,6 +14,7 @@ const {
   follow,
   following,
   unfollow,
+  unfollows,
 } = require("./Controllers/PostController");
 const verifyToken = require("./middleWare/authMiddle");
 require("dotenv").config();
@@ -51,7 +52,7 @@ app.get("/verify", verifyToken);
 
 app.post("/follows/:userId", verifyToken, follow);
 
-app.post("/unfollow/:id", unfollow);
+app.post("/unfollow/:userId", verifyToken, unfollows);
 
 app.delete("/flush", router);
 

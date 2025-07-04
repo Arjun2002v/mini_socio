@@ -10,7 +10,6 @@ require("dotenv").config;
 
 router.post("/signup", async (req, res) => {
   const { name, password } = req.body;
-  console.log("Incoming :", req.body);
 
   const isThere = await user.findOne({ name });
   if (isThere) {
@@ -23,7 +22,7 @@ router.post("/signup", async (req, res) => {
     await newUser.save();
 
     const token = jwt.sign(
-      { _id: newUser._id, name: newUser.name, avatar: newUser.avatar },
+      { _id: newUser?._id, name: newUser?.name, avatar: newUser?.avatar },
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",

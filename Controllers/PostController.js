@@ -153,11 +153,15 @@ exports.follow = async (req, res) => {
 };
 
 //Unfollow logic
-exports.unfollow = async (req, res) => {
+exports.unfollows = async (req, res) => {
   try {
     const { userId } = req.params;
+    console.log("Target userId:", userId);
+    console.log("Current user:", req.user?._id);
 
-    // Remove current user from target user's followers
+    const targetUser = await user.findById(userId);
+    console.log("Before unfollow, followers:", targetUser.followers);
+
     const unfollow = await user.findByIdAndUpdate(
       userId,
       {
@@ -166,7 +170,8 @@ exports.unfollow = async (req, res) => {
       { new: true }
     );
 
-    // Also remove target user from current user's following
+    console.log("After unfollow, followers:", unfollow.followers);
+
     await user.findByIdAndUpdate(
       req.user?._id,
       {

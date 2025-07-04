@@ -10,7 +10,7 @@ exports.getPost = async (req, res) => {
   res.send(posts);
 };
 
-//Create a Post Logic
+// Create a Post Logic
 
 exports.createPost = async (req, res) => {
   const { content, media, userId } = req.body;
@@ -31,7 +31,7 @@ exports.createPost = async (req, res) => {
   res.sendStatus(201).json({ message: "Post has been created" });
 };
 
-//Delete a Post Logic
+// Delete a Post Logic
 
 exports.deletePost = async (req, res) => {
   const { id } = req.params;
@@ -43,6 +43,8 @@ exports.deletePost = async (req, res) => {
     res.sendStatus(201).json({ message: "Post has been deleted" });
   }
 };
+
+// Edit Post Logic
 
 exports.editPost = async (req, res) => {
   const { id } = req.params;
@@ -100,6 +102,8 @@ exports.unlike = async (req, res) => {
   }
 };
 
+//Get Specific Post from particular user
+
 exports.getSpecificPost = async (req, res) => {
   const { id } = req.params;
   try {
@@ -121,7 +125,7 @@ exports.getUser = async (req, res) => {
   }
 };
 
-//Follows Logic
+//Follows following logic Logic
 
 exports.follow = async (req, res) => {
   try {
@@ -135,23 +139,49 @@ exports.follow = async (req, res) => {
       return res.status(400).json({ message: "You can't follow yourself" });
     }
 
-    await user.findByIdAndUpdate(
-      userId,
-      {
-        $addToSet: { followers: req.user._id },
-      },
-      { new: true }
-    );
+    await user.findByIdAndUpdate(userId, {
+      $addToSet: { followers: req.user._id },
+    });
 
-    await user.findByIdAndUpdate(
-      req.user?._id,
-      { following: userId },
-      { new: true }
-    );
+    await user.findByIdAndUpdate(req.user?._id, { following: userId });
 
     return res.status(201).json({ message: "New follower added" });
   } catch (error) {
     console.error("Follow error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+//Unfollow logic
+exports.unfollow = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Remove current user from target user's followers
+    const unfollow = await user.findByIdAndUpdate(
+      userId,
+      {
+        $pull: { followers: req.user?._id },
+      },
+      { new: true }
+    );
+
+    // Also remove target user from current user's following
+    await user.findByIdAndUpdate(
+      req.user?._id,
+      {
+        $pull: { following: userId },
+      },
+      { new: true }
+    );
+
+    if (unfollow) {
+      return res.status(200).json({ message: "Unfollowed successfully" });
+    } else {
+      return res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error("Unfollow error:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };

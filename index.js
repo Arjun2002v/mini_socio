@@ -50,7 +50,7 @@ app.get("/verify", verifyToken);
 
 app.post("/follows/:userId", verifyToken, follow);
 
-app.get("/following", following);
+app.delete("/flush", router);
 
 app.listen(5000, () => {
   console.log("Running on 500");

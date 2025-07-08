@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Dash from "../Dash";
-import { data, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [name, setName] = useState();
@@ -30,14 +30,13 @@ const Login = () => {
       }
       console.log("API data:", data?.newUser); // ✅ confirm data here
       setUser(data?.newUser);
-      console.log("API data:After", data?.newUser);
+
+      navigate(`/dashboard/${data?.newUser?._id}`);
     } catch (error) {
       console.error(error);
       setMessage("An error occurred");
     }
     console.log("user", user?.name);
-
-    navigate(`/dashboard/${user?._id}`);
   };
   useEffect(() => {
     console.log("User state updated:", user);
@@ -66,7 +65,7 @@ const Login = () => {
           {message}
         </div>
       </div>
-      <Dash username={user} />
+      <Dash />
     </>
   );
 };

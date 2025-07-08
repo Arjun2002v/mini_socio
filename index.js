@@ -1,6 +1,7 @@
 const express = require("express");
 
 const connectDB = require("./Database/Mongo");
+const cors = require("cors");
 const router = require("./routes/authRoutes");
 const {
   createPost,
@@ -12,15 +13,15 @@ const {
   getSpecificPost,
   getUser,
   follow,
-  following,
-  unfollow,
+
   unfollows,
 } = require("./Controllers/PostController");
 const verifyToken = require("./middleWare/authMiddle");
 require("dotenv").config();
 const app = express();
 
-const PORT = 5000;
+app.use(cors());
+const PORT = process.env.PORT || 5000;
 connectDB();
 if (!connectDB) {
   console.error("MongoDB URI not found in .env file");
@@ -29,6 +30,8 @@ if (!connectDB) {
 app.use(express.json());
 
 app.post("/signup", router);
+
+app.get("/users/:id", router);
 
 app.post("/login", verifyToken, router);
 

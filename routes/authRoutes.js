@@ -5,6 +5,7 @@ const user = require("../Schema/user");
 const mongoose = require("mongoose");
 
 const jwt = require("jsonwebtoken");
+const { json } = require("body-parser");
 
 require("dotenv").config;
 
@@ -30,7 +31,7 @@ router.post("/signup", async (req, res) => {
     );
 
     res.cookie("token", token, { httpOnly: true, maxAge: 24 * 60 * 1000 });
-    res.json({ token }).sendStatus(201);
+    res.send({ newUser }).json({ message: "Sign In Done" }).sendStatus(201);
   }
 });
 
@@ -50,7 +51,7 @@ router.post("/login", async (req, res) => {
   //Generate Jwt Token
   const token = jwt.sign({ name: user.name }, { expiresIn: "24h" });
 
-  res.json({ message: "Login Successful", token }).sendStatus(201);
+  res.json({ message: "Login Successful" }).sendStatus(201);
 });
 
 router.delete("/flush", async (req, res) => {
@@ -61,6 +62,12 @@ router.delete("/flush", async (req, res) => {
     console.error(err);
     res.status(500).json({ message: "Failed to drop database" });
   }
+});
+
+router.get("/users/:id", async (req, res) => {
+  const { id } = req.params;
+  const details = await user.findById(id);
+  res.sendStatus(201).json({ json });
 });
 
 module.exports = router;

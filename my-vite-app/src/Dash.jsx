@@ -1,9 +1,14 @@
 import React from "react";
+import { useParams } from "react-router-dom";
+import useApi from "./hooks/useSwr";
 
-const Dash = ({ username }) => {
+const Dash = () => {
+  const { id } = useParams();
+  const { data } = useApi(`/users/${id}`);
+  console.log(" User data", data);
   return (
     <div>
-      <p>Hi {username}</p>
+      <p>Hi {id}</p>
     </div>
   );
 };

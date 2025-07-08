@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import Dash from "../Dash";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 const Login = () => {
   const [name, setName] = useState();
 
   const [password, setPassword] = useState();
-  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -20,20 +20,29 @@ const Login = () => {
         body: JSON.stringify({ name, password }),
       });
       const data = await response.json();
+      console.log("DADADA", response.ok);
 
-      if (!response.ok) {
-        setMessage(data.message || "Signup failed");
-      } else {
-        setMessage("Signup successful!");
+      if (response.ok === "true") {
+        toast.success("Signup successful", {
+          duration: 5000,
+          position: "bottom-right",
+        });
 
         localStorage.setItem("token", data.token);
+      } else {
+        toast.error(data.message, {
+          duration: 5000,
+          position: "bottom-right",
+        });
       }
-      console.log("API data:", data?.newUser); // ✅ confirm data here
 
       navigate(`/dashboard/${data?.newUser?._id}`, { state: data?.newUser });
     } catch (error) {
       console.error(error);
-      setMessage("An error occurred");
+      toast.error("Error signing you up", {
+        duration: 5000,
+        position: "bottom-right",
+      });
     }
   };
 
@@ -56,11 +65,14 @@ const Login = () => {
               placeholder="Enter your password"
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button onClick={submit}>Sign In</button>
+            <button onClick={submit} className="cursor-pointer">
+              Sign In
+            </button>
           </div>
-          {message}
+          <Toaster />
         </div>
       </div>
+
       <Dash />
     </>
   );

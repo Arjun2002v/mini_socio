@@ -35,9 +35,9 @@ app.get("/users/:id", router);
 
 app.post("/login", verifyToken, router);
 
-app.get("/posts", verifyToken, getPost);
+app.get("/posts", getPost);
 
-app.post("/posts", verifyToken, createPost);
+app.post("/posts", createPost);
 
 app.delete("/posts/:id", verifyToken, deletePost);
 
@@ -49,7 +49,7 @@ app.delete("/posts/:id/unlike", verifyToken, unlike);
 
 app.get("/users", getUser);
 
-app.get("/posts/users/:id", verifyToken, getSpecificPost);
+app.get("/posts/users/:id", getSpecificPost);
 
 app.get("/verify", verifyToken);
 

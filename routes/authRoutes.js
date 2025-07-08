@@ -67,7 +67,7 @@ router.delete("/flush", async (req, res) => {
 router.get("/users/:id", async (req, res) => {
   const { id } = req.params;
   const details = await user.findById(id);
-  res.sendStatus(201).json({ json });
+  res.status(201).json({ details });
 });
 
 module.exports = router;

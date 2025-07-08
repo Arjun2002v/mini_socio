@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Dash from "../Dash";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [name, setName] = useState();
-  const [user, setUser] = useState();
+
   const [password, setPassword] = useState();
   const [message, setMessage] = useState("");
 
@@ -29,18 +29,14 @@ const Login = () => {
         localStorage.setItem("token", data.token);
       }
       console.log("API data:", data?.newUser); // ✅ confirm data here
-      setUser(data?.newUser);
 
-      navigate(`/dashboard/${data?.newUser?._id}`);
+      navigate(`/dashboard/${data?.newUser?._id}`, { state: data?.newUser });
     } catch (error) {
       console.error(error);
       setMessage("An error occurred");
     }
-    console.log("user", user?.name);
   };
-  useEffect(() => {
-    console.log("User state updated:", user);
-  }, [user]);
+
   return (
     <>
       <div className=" bg-brown h-[100vh] w-full ">

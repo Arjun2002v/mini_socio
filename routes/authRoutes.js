@@ -31,7 +31,10 @@ router.post("/signup", async (req, res) => {
     );
 
     res.cookie("token", token, { httpOnly: true, maxAge: 24 * 60 * 1000 });
-    res.send({ newUser }).json({ message: "Sign In Done" }).sendStatus(201);
+    res
+      .send({ newUser, token })
+      .json({ message: "Sign In Done" })
+      .sendStatus(201);
   }
 });
 

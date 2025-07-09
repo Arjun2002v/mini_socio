@@ -2,12 +2,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import useApi from "./hooks/useSwr";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import Topbar from "./Topbar";
 
 const Dash = () => {
   const { id } = useParams();
   const { data } = useApi(`/users/${id}`);
   const { posts } = useApi(`/posts/users//${id}`);
   const [active, setActive] = useState(false);
+  const token = localStorage.getItem("token");
+  console.log("this is token", token);
 
   const [post, setPost] = useState("");
   console.log("Post data:", posts);
@@ -33,6 +36,7 @@ const Dash = () => {
 
   return (
     <div>
+      <Topbar />
       <p>Hi {data?.details?.name} Welcome to Mini_social</p>
       <div className="flex flex-col gap-2">
         <button onClick={() => setActive(!active)} className="cursor-pointer">

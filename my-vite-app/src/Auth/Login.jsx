@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import Topbar from "../Topbar";
 
 const Login = () => {
   const [name, setName] = useState();
@@ -20,7 +21,6 @@ const Login = () => {
         body: JSON.stringify({ name, password }),
       });
       const data = await response.json();
-      console.log("DADADA", response.ok);
 
       if (response.ok) {
         toast.success("Signup successful", {
@@ -32,26 +32,25 @@ const Login = () => {
         navigate(`/dashboard/${data?.newUser?._id}`);
       } else {
         toast.error(data.message, {
-          duration: 5000,
-          position: "bottom-right",
+          duration: 6000,
+          position: "bottom-center",
         });
       }
     } catch (error) {
       console.error(error);
       toast.error("Error signing you up", {
-        duration: 5000,
-        position: "bottom-right",
+        duration: 6000,
+        position: "bottom-center",
       });
     }
   };
 
   return (
     <>
+      <Topbar />
       <div className=" bg-brown h-[100vh] w-full ">
         <div className="flex justify-center  ">
           <div className="flex flex-col justify-center align-center border-white border-1">
-            <p>Sign In</p>
-
             <input
               type="text"
               className="border-black border-1"
@@ -64,7 +63,10 @@ const Login = () => {
               placeholder="Enter your password"
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button onClick={submit} className="cursor-pointer">
+            <button
+              onClick={submit}
+              className="cursor-pointer flex justify-center font-bold bg-green-700 w-22 rounded-md p-2 text-white"
+            >
               Sign In
             </button>
           </div>

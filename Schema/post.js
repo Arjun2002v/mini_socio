@@ -11,15 +11,16 @@ const post = new mongoose.Schema({
       required: true,
     },
   ],
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-  },
+
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
 
   comment: {
     type: String,
     ref: "post",
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
   },
 });
 

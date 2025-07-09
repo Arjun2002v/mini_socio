@@ -51,13 +51,17 @@ exports.deletePost = async (req, res) => {
 
 exports.editPost = async (req, res) => {
   const { id } = req.params;
-  const { content, media } = req.body;
+  const { content } = req.body;
   const updatedPost = {};
   if (content) updatedPost.content = content;
-  if (media) updatedPost.media = media;
-  await post.findByIdAndUpdate(id, updatedPost, { new: true });
+  // if (media) updatedPost.media = media;
+  const updated = await post.findByIdAndUpdate(id, updatedPost, { new: true });
 
-  res.json({ message: "Post has been updated" }).sendStatus(201);
+  if (updated) {
+    res.json({ message: "Post has been updated" }).sendStatus(201);
+  } else {
+    res.json({ message: "Some Error updating the post" }).sendStatus(201);
+  }
 };
 
 //Like the Post Logic

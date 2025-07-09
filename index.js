@@ -33,15 +33,15 @@ app.post("/signup", router);
 
 app.get("/users/:id", router);
 
-app.post("/login", verifyToken, router);
+app.post("/login", router);
 
 app.get("/posts", getPost);
 
 app.post("/posts", createPost);
 
-app.delete("/posts/:id", verifyToken, deletePost);
+app.delete("/posts/:id", deletePost);
 
-app.patch("/posts/:id", verifyToken, editPost);
+app.patch("/posts/:id", editPost);
 
 app.post("/posts/:id/like", verifyToken, likePost);
 

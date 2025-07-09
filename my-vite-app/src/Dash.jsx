@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useApi from "./hooks/useSwr";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -11,6 +11,7 @@ const Dash = () => {
 
   const [post, setPost] = useState("");
   console.log("Post data:", posts);
+  const nav = useNavigate();
 
   const submit = async (id) => {
     const response = await fetch("http://localhost:5000/posts", {
@@ -23,6 +24,7 @@ const Dash = () => {
     if (response.ok) {
       toast.success("Post created successfully");
       setPost("");
+      nav("/home/posts");
     } else {
       toast.error("Post creation failed");
     }

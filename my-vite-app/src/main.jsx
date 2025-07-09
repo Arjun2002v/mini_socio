@@ -6,6 +6,8 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import Login from "./Auth/Login.jsx";
 import Dash from "./Dash.jsx";
 import Home from "./Home.jsx";
+import { Posts } from "./Posts.jsx";
+import ProtectedRoutes from "./ProtectedRoutes.jsx";
 
 let route = createBrowserRouter([
   {
@@ -13,12 +15,21 @@ let route = createBrowserRouter([
     Component: Login,
   },
   {
-    path: "/dashboard/:id",
-    Component: Dash,
-  },
-  {
-    path: "/home",
-    Component: Home,
+    element: <ProtectedRoutes />,
+    children: [
+      {
+        path: "/dashboard/:id",
+        Component: Dash,
+      },
+      {
+        path: "/home",
+        Component: Home,
+      },
+      {
+        path: "/home/posts",
+        Component: Posts,
+      },
+    ],
   },
 ]);
 

@@ -7,7 +7,7 @@ const { find, findById } = require("../Schema/user");
 
 exports.getPost = async (req, res) => {
   const posts = await post.find().populate("createdBy", "name");
-  res.send(posts);
+  res.json({ data: posts });
 };
 
 // Create a Post Logic
@@ -27,8 +27,11 @@ exports.createPost = async (req, res) => {
     createdBy: userId,
   });
 
-  await newPost.save();
-  res.json({ message: "Post has been created" }).status(201);
+  const data = await newPost.save();
+  res.status(201).json({
+    message: "Post has been created",
+    data: data,
+  });
 };
 
 // Delete a Post Logic

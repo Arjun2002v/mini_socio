@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Dash from "../Dash";
+
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -22,21 +22,20 @@ const Login = () => {
       const data = await response.json();
       console.log("DADADA", response.ok);
 
-      if (response.ok === "true") {
+      if (response.ok) {
         toast.success("Signup successful", {
           duration: 5000,
           position: "bottom-right",
         });
 
         localStorage.setItem("token", data.token);
+        navigate(`/dashboard/${data?.newUser?._id}`);
       } else {
         toast.error(data.message, {
           duration: 5000,
           position: "bottom-right",
         });
       }
-
-      navigate(`/dashboard/${data?.newUser?._id}`, { state: data?.newUser });
     } catch (error) {
       console.error(error);
       toast.error("Error signing you up", {
@@ -72,8 +71,6 @@ const Login = () => {
           <Toaster />
         </div>
       </div>
-
-      <Dash />
     </>
   );
 };

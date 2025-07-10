@@ -7,9 +7,15 @@ export const Topbar = () => {
   const nav = useNavigate();
   const { id } = useParams();
   const { data } = useApi(`/users/${id}`);
+  const token = localStorage.getItem("token");
 
   const LogOut = () => {
-    localStorage.removeItem("token");
+    if (!token) {
+      return null;
+    } else {
+      localStorage.removeItem("token");
+    }
+
     nav("/signup");
     toast.success("Logout successful", { position: "bottom-center" });
   };

@@ -3,15 +3,18 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import Topbar from "../Topbar";
+import Spinner from "../Spinner";
 
 const Login = () => {
   const [name, setName] = useState();
+  const [loading, setLoading] = useState(false);
 
   const [password, setPassword] = useState();
 
   const navigate = useNavigate();
 
   const submit = async () => {
+    setLoading(true);
     try {
       const response = await fetch("http://localhost:5000/signup", {
         method: "POST",
@@ -21,11 +24,12 @@ const Login = () => {
         body: JSON.stringify({ name, password }),
       });
       const data = await response.json();
+      setLoading(false);
 
       if (response.ok) {
         toast.success("Signup successful", {
           duration: 5000,
-          position: "bottom-right",
+          position: "bottom-center",
         });
 
         localStorage.setItem("token", data.token);
@@ -48,8 +52,8 @@ const Login = () => {
   return (
     <>
       <Topbar />
-      <div className=" bg-brown h-[100vh] w-full ">
-        <div className="flex justify-center  ">
+      <div className=" bg-brown h-[100vh] w-full flex   items-center justify-center">
+        <div className="flex justify-center flex-col gap-4  ">
           <div className="flex flex-col justify-center align-center border-white border-1">
             <input
               type="text"
@@ -71,6 +75,7 @@ const Login = () => {
             </button>
           </div>
           <Toaster />
+          {loading && <Spinner />}
         </div>
       </div>
     </>

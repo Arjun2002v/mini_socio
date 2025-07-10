@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 export const Posts = () => {
   const { data: posts } = useApi("/posts");
   const [openEdit, setEdit] = useState(false);
+  const [likes, setLike] = useState();
   const [text, setText] = useState("");
 
   const token = localStorage.getItem("token");
@@ -36,6 +37,23 @@ export const Posts = () => {
     if (response) {
       toast.success("Edit Done Successfully !!");
     }
+  };
+
+  const liked = async (id) => {
+    const response = fetch(`http://localhost:5000/posts/${id}/like`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ likes: id }),
+    });
+    const data = await (await response).json();
+    console.log("Like", data?.data?.likes);
+    setLike((prev) =>
+      prev?.map((item) =>
+        item?._id === id ? { ...item, likes: [data?.likes?.length] } : item
+      )
+    );
   };
 
   return (
@@ -86,6 +104,10 @@ export const Posts = () => {
             ) : (
               ""
             )}
+            <div onClick={() => liked(item?._id)}>
+              {" "}
+              ❤ {likes?.data?.likes?.length}
+            </div>
           </div>
         ))}{" "}
       </div>

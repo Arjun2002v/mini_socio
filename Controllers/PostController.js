@@ -51,7 +51,7 @@ exports.deletePost = async (req, res) => {
 
 exports.editPost = async (req, res) => {
   const { id } = req.params;
-  const { content } = req.body;
+  const { content, media } = req.body;
   const updatedPost = {};
   if (content) updatedPost.content = content;
   // if (media) updatedPost.media = media;
@@ -82,7 +82,7 @@ exports.likePost = async (req, res) => {
 
     return res.status(200).json({
       message: "Post liked successfully",
-      post: updatedPost,
+      data: updatedPost,
     });
   } catch (error) {
     console.error("Error liking post:", error);

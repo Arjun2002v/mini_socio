@@ -43,7 +43,7 @@ app.delete("/posts/:id", deletePost);
 
 app.patch("/posts/:id", editPost);
 
-app.post("/posts/:id/like", verifyToken, likePost);
+app.post("/posts/:id/like", likePost);
 
 app.delete("/posts/:id/unlike", verifyToken, unlike);
 

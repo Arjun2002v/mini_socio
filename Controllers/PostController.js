@@ -69,10 +69,11 @@ exports.editPost = async (req, res) => {
 exports.likePost = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log("request", req?.user?._id);
 
     const updatedPost = await post.findByIdAndUpdate(
       id,
-      { $addToSet: { likes: id } },
+      { $addToSet: { likes: req?.user?._id } },
       { new: true }
     );
 

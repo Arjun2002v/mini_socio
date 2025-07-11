@@ -9,22 +9,34 @@ export const Posts = () => {
   const { data: posts } = useApi("/posts");
   const [openEdit, setEdit] = useState(false);
   const [text, setText] = useState("");
+  const [newpost, newsetPosts] = useState(posts?.data);
 
   const liked = async (id) => {
-    const response = await fetch(`http://localhost:5000/posts/${id}`, {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`http://localhost:5000/posts/${id}/like`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ likes: id }),
     });
 
-    await response.json();
-  };
+    const data = await response.json();
+    console.log("user", id);
 
+    newsetPosts((prev) =>
+      prev?.map((item) =>
+        item?._id === id ? { ...item, likes: data?.likes } : item
+      )
+    );
+  };
   useEffect(() => {
-    console.log("Posts updated:", posts);
+    if (posts?.data) {
+      newsetPosts(posts.data);
+    }
   }, [posts]);
+  console.log("Postsssssss", newpost);
 
   const token = localStorage.getItem("token");
   const decoded = jwtDecode(token);
@@ -60,7 +72,7 @@ export const Posts = () => {
       <Topbar />
       <div className="flex flex-col gap-5  ">
         <p className="text-4xl">Posts for you to read </p>
-        {posts?.data?.map((item) => (
+        {newpost?.map((item) => (
           <div className="flex gap-2 items-center">
             <p>{item?.content}</p>
             {item?.createdBy?.name === decoded?.name ? (

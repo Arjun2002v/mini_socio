@@ -43,9 +43,9 @@ app.delete("/posts/:id", deletePost);
 
 app.patch("/posts/:id", editPost);
 
-app.post("/posts/:id/like", likePost);
+app.post("/posts/:id/like", verifyToken, likePost);
 
-app.delete("/posts/:id/unlike", verifyToken, unlike);
+app.delete("/posts/:id", unlike);
 
 app.get("/users", getUser);
 
@@ -53,9 +53,9 @@ app.get("/posts/users/:id", getSpecificPost);
 
 app.get("/verify", verifyToken);
 
-app.post("/follows/:userId", verifyToken, follow);
+app.post("/follows/:userId", follow);
 
-app.post("/unfollow/:userId", verifyToken, unfollows);
+app.post("/unfollow/:userId", unfollows);
 
 app.delete("/flush", router);
 

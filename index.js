@@ -53,7 +53,7 @@ app.get("/posts/users/:id", getSpecificPost);
 
 app.get("/verify", verifyToken);
 
-app.post("/follows/:userId", follow);
+app.post("/follows/:userId", verifyToken, follow);
 
 app.post("/unfollow/:userId", unfollows);
 

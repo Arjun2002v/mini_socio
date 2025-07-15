@@ -8,6 +8,7 @@ import Dash from "./Dash.jsx";
 import Home from "./Home.jsx";
 import { Posts } from "./Posts.jsx";
 import ProtectedRoutes from "./ProtectedRoutes.jsx";
+import User from "./User.jsx";
 
 let route = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ let route = createBrowserRouter([
       {
         path: "/home/posts",
         Component: Posts,
+      },
+      {
+        path: "/home/user/:id",
+        Component: User,
       },
     ],
   },

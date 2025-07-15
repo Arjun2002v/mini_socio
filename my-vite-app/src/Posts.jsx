@@ -4,9 +4,11 @@ import Topbar from "./Topbar";
 import { jwtDecode } from "jwt-decode";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const Posts = () => {
   const { data: posts } = useApi("/posts");
+  const nav = useNavigate();
   const [openEdit, setEdit] = useState(false);
   const [text, setText] = useState("");
   const [newpost, newsetPosts] = useState(posts?.data);
@@ -33,7 +35,7 @@ export const Posts = () => {
   };
   useEffect(() => {
     if (posts?.data) {
-      newsetPosts(posts.data);
+      newsetPosts(posts?.data);
     }
   }, [posts]);
 
@@ -41,8 +43,6 @@ export const Posts = () => {
   const decoded = jwtDecode(token);
 
   const Delete = (id) => {
-    0;
-    console.log("UserId", id);
     const response = fetch(`http://localhost:5000/posts/${id}`, {
       method: "DELETE",
       headers: {
@@ -54,7 +54,6 @@ export const Posts = () => {
     }
   };
   const edit = (id) => {
-    console.log("UserId", id);
     const response = fetch(`http://localhost:5000/posts/${id}`, {
       method: "PATCH",
       headers: {
@@ -72,9 +71,22 @@ export const Posts = () => {
       <Topbar />
       <div className="flex flex-col gap-5  ">
         <p className="text-4xl">Posts for you to read </p>
-        {newpost?.map((item) => (
-          <div className="flex gap-2 items-center">
-            <p>{item?.content}</p>
+        {newpost?.map((item, index) => (
+          <div className="flex gap-2 items-center" key={index}>
+            <div className="flex flex-col gap-2">
+              <p>{item?.content}</p>
+              <p>
+                Post Made by{" "}
+                <span
+                  className="hover:cursor-pointer hover:font-black"
+                  onClick={() => nav(`/home/user/${item?.createdBy?._id}`)}
+                >
+                  {" "}
+                  {item?.createdBy?.name}
+                </span>{" "}
+              </p>
+            </div>
+
             {item?.createdBy?.name === decoded?.name ? (
               <>
                 {" "}

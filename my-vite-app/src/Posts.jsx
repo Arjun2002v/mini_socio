@@ -36,12 +36,12 @@ export const Posts = () => {
       newsetPosts(posts.data);
     }
   }, [posts]);
-  console.log("Postsssssss", newpost);
 
   const token = localStorage.getItem("token");
   const decoded = jwtDecode(token);
 
   const Delete = (id) => {
+    0;
     console.log("UserId", id);
     const response = fetch(`http://localhost:5000/posts/${id}`, {
       method: "DELETE",

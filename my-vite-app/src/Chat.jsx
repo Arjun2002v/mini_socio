@@ -1,18 +1,22 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+
+const socket = io("http://localhost:5000"); // ✅ Use your backend address
 
 export const Chat = () => {
   const [message, setMessage] = useState("");
-  const [send, setSend] = useState([]);
-  const socket = io("http://localhost:5000");
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    socket.on("receiveMessage", (message) => {
-      setSend((prev) => [...prev, message]);
+    socket.on("connect", () => {
+      console.log("Connected to server:", socket.id);
     });
-    return () => {
-      socket.disconnect();
-    };
+
+    socket.on("receiveMessage", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    return () => socket.disconnect();
   }, []);
 
   const sendMessage = () => {
@@ -21,26 +25,14 @@ export const Chat = () => {
   };
   return (
     <div>
-      <div>
-        {send.map((item) => (
-          <>
-            <p>{item}</p>
-          </>
+      <h2>Chat</h2>
+      <ul>
+        {messages.map((msg, i) => (
+          <li key={i}>{msg}</li>
         ))}
-      </div>
-      <input
-        type="text"
-        className="border-1 border-black "
-        placeholder="Shut Up and type"
-        onChange={(e) => setMessage(e.target.value)}
-        value={message}
-      />
-      <button
-        className="p-3 bg-green-400 font-bold text-white rounded-md w-20 text-[14px] cursor-pointer"
-        onClick={sendMessage}
-      >
-        Send
-      </button>
+      </ul>
+      <input value={message} onChange={(e) => setMessage(e.target.value)} />
+      <button onClick={sendMessage}>Send</button>
     </div>
   );
 };

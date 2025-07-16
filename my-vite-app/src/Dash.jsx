@@ -3,6 +3,7 @@ import useApi from "./hooks/useSwr";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import Topbar from "./Topbar";
+import { Chat } from "./Chat";
 
 const Dash = () => {
   const { id } = useParams();
@@ -10,6 +11,7 @@ const Dash = () => {
   const { posts } = useApi(`/posts/users//${id}`);
   const [active, setActive] = useState(false);
   const token = localStorage.getItem("token");
+  const [open, setOpen] = useState("false");
   console.log("this is token", token);
 
   const [post, setPost] = useState("");
@@ -74,6 +76,8 @@ const Dash = () => {
           <></>
         )}
       </div>
+      <p onClick={() => setOpen("true")}>Lets Chat</p>
+      {open ? <Chat /> : <></>}
     </div>
   );
 };

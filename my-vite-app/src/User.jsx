@@ -40,7 +40,8 @@ const User = () => {
             )}
           </div>
           <p>{user?.details?.name}</p>
-          <p>{user?.details?.bio}</p>
+          {user?.details?.bio && <p>{user?.details?.bio}</p>}
+
           <div className="flex  gap-4">
             <p>Followers: {user?.details?.followers?.length}</p>
             <p>Following: {user?.details?.following?.length}</p>

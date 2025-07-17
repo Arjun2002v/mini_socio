@@ -5,6 +5,7 @@ const socket = io("http://localhost:5000"); // ✅ Use your backend address
 
 export const Chat = () => {
   const [text, settext] = useState("");
+  const [textStatus, setStatus] = useState("");
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
@@ -16,7 +17,23 @@ export const Chat = () => {
       setMessages((prev) => [...prev, msg]);
     });
 
-    return () => socket.disconnect();
+    return () => {
+      socket.off("connect");
+      socket.off("receiveMessage");
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("showTyping", (msg) => {
+      setStatus(msg);
+    });
+    setTimeout(() => {
+      setStatus("");
+    }, 2000);
+
+    return () => {
+      socket.off("showTyping");
+    };
   }, []);
 
   const sendMessage = () => {
@@ -25,17 +42,18 @@ export const Chat = () => {
   };
 
   useEffect(() => {
-    console.log("Data", messages);
+    console.log("Datass", messages);
   }, [messages]);
   return (
     <div>
       <h2>Chat</h2>
       <ul>
-        {messages.map((msg, i) => (
+        {messages?.map((msg, i) => (
           <li key={i}>{msg}</li>
         ))}
       </ul>
       <input value={text} onChange={(e) => settext(e.target.value)} />
+      {textStatus ? <p> Typing...</p> : <></>}
       <button onClick={sendMessage}>Send</button>
     </div>
   );

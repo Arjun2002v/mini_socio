@@ -4,7 +4,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 const User = () => {
   const { id } = useParams();
-  const { data: user } = useApi(`/users/${id}`);
+  const { data: user } = useApi(`/users/${id ? id : null}`);
 
   const follow = async (id) => {
     const token = localStorage.getItem("token");

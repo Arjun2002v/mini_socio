@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 const socket = io("http://localhost:5000"); // ✅ Use your backend address
 
 export const Chat = () => {
-  const [message, setMessage] = useState("");
+  const [text, settext] = useState("");
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
@@ -20,9 +20,13 @@ export const Chat = () => {
   }, []);
 
   const sendMessage = () => {
-    socket.emit("sendMessage", message);
-    setMessage("");
+    socket.emit("sendMessage", text);
+    settext("");
   };
+
+  useEffect(() => {
+    console.log("Data", messages);
+  }, [messages]);
   return (
     <div>
       <h2>Chat</h2>
@@ -31,7 +35,7 @@ export const Chat = () => {
           <li key={i}>{msg}</li>
         ))}
       </ul>
-      <input value={message} onChange={(e) => setMessage(e.target.value)} />
+      <input value={text} onChange={(e) => settext(e.target.value)} />
       <button onClick={sendMessage}>Send</button>
     </div>
   );

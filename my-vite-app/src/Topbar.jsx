@@ -8,8 +8,8 @@ export const Topbar = () => {
   const nav = useNavigate();
   const token = localStorage.getItem("token");
   // const decoded = jwtDecode(token);
-  const { id } = useParams();
-  const { data } = useApi(`/users/${id}`);
+  // const { id } = useParams();
+  // const { data } = useApi(`/users/${id}`);
 
   const LogOut = () => {
     if (!token) {

@@ -86,10 +86,7 @@ io.on("connection", (socket) => {
     io.emit("receiveMessage", data);
   });
 });
-socket.on("typing", (msg) => {
-  // Send to everyone except sender
-  socket.broadcast.emit("showTyping", msg);
-});
+
 server.listen(PORT, () => {
   console.log(`Server and Socket.IO running on port ${PORT}`);
 });

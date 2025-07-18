@@ -2,7 +2,7 @@ import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5000"); // ✅ Use your backend address
+const socket = io("http://localhost:5001"); // ✅ Use your backend address
 
 export const Chat = () => {
   const [text, settext] = useState("");
@@ -11,6 +11,7 @@ export const Chat = () => {
   const token = localStorage.getItem("token");
   const decode = jwtDecode(token);
 
+  //Function for sending and recieving message
   useEffect(() => {
     socket.on("connect", () => {
       console.log("Connected to server:", socket.id);
@@ -26,36 +27,48 @@ export const Chat = () => {
     };
   }, []);
 
+  //Function for for showing typing
   useEffect(() => {
-    socket.on("showTyping", (msg) => {
+    let timeout;
+
+    const handleTypingStatus = (msg) => {
       setStatus(msg);
-    });
-    setTimeout(() => {
-      setStatus("");
-    }, 2000);
+
+      // Clear any previous timeout
+      if (timeout) clearTimeout(timeout);
+
+      // Set a new timeout to clear typing indicator
+      timeout = setTimeout(() => {
+        setStatus("");
+      }, 2000);
+    };
+
+    socket.on("showTyping", handleTypingStatus);
 
     return () => {
-      socket.off("showTyping");
+      socket.off("showTyping", handleTypingStatus);
+      clearTimeout(timeout); // Clear timeout on unmount
     };
   }, []);
+
+  const handleTyping = (e) => {
+    settext(e.target.value);
+    socket.emit("showTyping", decode.name); // you sending your name
+  };
 
   const sendMessage = () => {
     socket.emit("sendMessage", {
       text: text,
-      sender: decode.name, // Assuming decode.name is your username
+      sender: decode.name,
     });
 
     settext("");
   };
 
-  useEffect(() => {
-    console.log("Datass", messages);
-  }, [messages]);
-  console.log("User", decode);
   return (
     <div className="flex items-center flex-col">
       <h2>Chat</h2>
-      <ul className=" w-full p-4 space-y-2">
+      <ul className=" w-150 p-4 space-y-2">
         {messages?.map((msg, i) => {
           const isMe = decode.name === msg?.sender;
           return (
@@ -66,7 +79,7 @@ export const Chat = () => {
               <div
                 className={`px-4 py-2 max-w-xs break-words rounded-lg text-white ${
                   isMe
-                    ? "bg-green-500 rounded-br-none"
+                    ? "bg-green-400  rounded-br-none"
                     : "bg-blue-400 rounded-bl-none"
                 }`}
               >
@@ -75,11 +88,24 @@ export const Chat = () => {
             </div>
           );
         })}
+        {textStatus && <p> typing...</p>}
       </ul>
 
-      <input value={text} onChange={(e) => settext(e.target.value)} />
-      {textStatus ? <p> Typing...</p> : <></>}
-      <button onClick={sendMessage}>Send</button>
+      <div className="flex gap-2">
+        {" "}
+        <input
+          placeholder="Type your thoughts"
+          value={text}
+          onChange={handleTyping}
+          className="border-black border-1 rounded-md flex items-center justify-center p-2 h-8"
+        />
+        <button
+          onClick={sendMessage}
+          className="bg-black text-white rounded-md p-3 w-14 h-8 flex items-center cursor-pointer "
+        >
+          Send
+        </button>
+      </div>
     </div>
   );
 };

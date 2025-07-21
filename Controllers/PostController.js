@@ -216,7 +216,7 @@ exports.saveMessage = async (req, res) => {
 exports.getMessage = async (req, res) => {
   try {
     const message = await messages.find().sort({ time: 1 });
-    res.json(message);
+    res.json({ message: messages });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch messages" });
   }

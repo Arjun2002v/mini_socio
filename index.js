@@ -15,6 +15,8 @@ const {
   follow,
 
   unfollows,
+  getMessage,
+  saveMessage,
 } = require("./Controllers/PostController");
 const verifyToken = require("./middleWare/authMiddle");
 require("dotenv").config();
@@ -41,7 +43,7 @@ const io = new Server(server, {
 });
 
 app.use(cors());
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 connectDB();
 if (!connectDB) {
   console.error("MongoDB URI not found in .env file");
@@ -69,6 +71,8 @@ app.delete("/posts/:id", verifyToken, unlike);
 
 app.get("/users", getUser);
 
+app.post("/user/message", saveMessage);
+
 app.get("/posts/users/:id", getSpecificPost);
 
 app.get("/verify", verifyToken);
@@ -76,16 +80,11 @@ app.get("/verify", verifyToken);
 app.post("/follows/:userId", verifyToken, follow);
 
 app.post("/unfollow/:userId", verifyToken, unfollows);
+app.get("/message", getMessage);
 
 app.delete("/flush", router);
 
 io.on("connection", (socket) => {
-  console.log(" User Connected", socket.id);
-  socket.on("sendMessage", (data) => {
-    console.log("Data Recieved", data);
-    io.emit("receiveMessage", data);
-  });
-
   socket.on("typing", (name) => {
     console.log("Typing...", name);
     socket.broadcast.emit("typing", `${name} is typing...`);

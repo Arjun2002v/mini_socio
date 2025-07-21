@@ -1,7 +1,9 @@
 const { param } = require("../routes/authRoutes");
+const messages = require("../Schema/messages");
 const post = require("../Schema/post");
 const user = require("../Schema/user");
 const { find, findById } = require("../Schema/user");
+const { Server } = require("socket.io");
 
 //Get all Posts Logic
 
@@ -9,6 +11,7 @@ exports.getPost = async (req, res) => {
   const posts = await post.find().populate("createdBy", "name");
   res.json({ data: posts });
 };
+const io = new Server();
 
 // Create a Post Logic
 
@@ -196,5 +199,25 @@ exports.unfollows = async (req, res) => {
   } catch (error) {
     console.error("Unfollow error:", error);
     return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+exports.saveMessage = async (req, res) => {
+  try {
+    const { sender, text, time } = req.body;
+    const data = new messages({ sender, time, text });
+    const newMessage = await data.save();
+    res.status(201).json({ message: newMessage });
+  } catch {
+    res.sendStatus(201).json({ error: "Error saving the message" });
+  }
+};
+
+exports.getMessage = async (req, res) => {
+  try {
+    const message = await messages.find().sort({ time: 1 });
+    res.json(message);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch messages" });
   }
 };

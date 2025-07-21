@@ -4,11 +4,14 @@ import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import Topbar from "./Topbar";
 import { Chat } from "./Chat";
+import { jwtDecode } from "jwt-decode";
 
 const Dash = () => {
   const { id } = useParams();
   const { data } = useApi(`/users/${id}`);
-
+  console.log("data", data);
+  const token = localStorage.getItem("token");
+  const decoded = jwtDecode(token);
   const [active, setActive] = useState(false);
 
   const [open, setOpen] = useState("false");
@@ -38,7 +41,7 @@ const Dash = () => {
   return (
     <div>
       <Topbar />
-      <p>Hi {data?.details?.name} Welcome to Mini_social</p>
+      <p>Hi {decoded?.name} Welcome to Mini_social</p>
       <div className="flex flex-col gap-2">
         <button onClick={() => setActive(!active)} className="cursor-pointer">
           New Post
@@ -76,7 +79,7 @@ const Dash = () => {
         )}
       </div>
       <p onClick={() => setOpen("true")}>Lets Chat</p>
-      {open ? <Chat /> : <></>}
+      {open && open === "true" ? <Chat setOpen={setOpen} /> : <></>}
     </div>
   );
 };

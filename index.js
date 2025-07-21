@@ -41,7 +41,7 @@ const io = new Server(server, {
 });
 
 app.use(cors());
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 connectDB();
 if (!connectDB) {
   console.error("MongoDB URI not found in .env file");
@@ -87,7 +87,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("typing", (name) => {
-    socket.broadcast.emit("showTyping,", name);
+    console.log("Typing...", name);
+    socket.broadcast.emit("showTyping", name);
   });
 });
 

@@ -2,16 +2,16 @@ import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5001"); // ✅ Use your backend address
+const socket = io("http://localhost:5000"); // ✅ Use your backend address
 
 export const Chat = () => {
   const [text, settext] = useState("");
-  const [textStatus, setStatus] = useState("");
+  const [status, setStatus] = useState("");
   const [messages, setMessages] = useState([]);
   const token = localStorage.getItem("token");
   const decode = jwtDecode(token);
 
-  //Function for sending and recieving message
+  //Function for sending and recieving messages
   useEffect(() => {
     socket.on("connect", () => {
       console.log("Connected to server:", socket.id);
@@ -32,6 +32,7 @@ export const Chat = () => {
     let timeout;
 
     const handleTypingStatus = (msg) => {
+      console.log("Typingsdada", msg);
       setStatus(msg);
 
       // Clear any previous timeout
@@ -53,7 +54,8 @@ export const Chat = () => {
 
   const handleTyping = (e) => {
     settext(e.target.value);
-    socket.emit("showTyping", decode.name); // you sending your name
+    console.log("Typing...", decode?.name);
+    socket.emit("showTyping", decode?.name); // you sending your name
   };
 
   const sendMessage = () => {
@@ -88,7 +90,9 @@ export const Chat = () => {
             </div>
           );
         })}
-        {textStatus && <p> typing...</p>}
+        {status && (
+          <p className="text-sm italic text-gray-500 px-2">{status}</p>
+        )}
       </ul>
 
       <div className="flex gap-2">

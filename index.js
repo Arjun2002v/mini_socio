@@ -88,7 +88,7 @@ io.on("connection", (socket) => {
 
   socket.on("typing", (name) => {
     console.log("Typing...", name);
-    socket.broadcast.emit("showTyping", name);
+    socket.broadcast.emit("typing", `${name} is typing...`);
   });
 });
 

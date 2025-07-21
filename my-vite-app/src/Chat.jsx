@@ -41,21 +41,21 @@ export const Chat = () => {
       // Set a new timeout to clear typing indicator
       timeout = setTimeout(() => {
         setStatus("");
-      }, 2000);
+      }, 1500);
     };
 
-    socket.on("showTyping", handleTypingStatus);
+    socket.on("typing", handleTypingStatus);
 
     return () => {
-      socket.off("showTyping", handleTypingStatus);
+      socket.off("typing", handleTypingStatus);
       clearTimeout(timeout); // Clear timeout on unmount
     };
   }, []);
 
   const handleTyping = (e) => {
     settext(e.target.value);
-    console.log("Typing...", decode?.name);
-    socket.emit("showTyping", decode?.name); // you sending your name
+
+    socket.emit("typing", decode?.name); // you sending your name
   };
 
   const sendMessage = () => {
@@ -70,6 +70,7 @@ export const Chat = () => {
   return (
     <div className="flex items-center flex-col">
       <h2>Chat</h2>
+
       <ul className=" w-150 p-4 space-y-2">
         {messages?.map((msg, i) => {
           const isMe = decode.name === msg?.sender;

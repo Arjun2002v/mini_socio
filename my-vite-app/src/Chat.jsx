@@ -24,20 +24,6 @@ export const Chat = ({ setOpen }) => {
   });
 
   //Function for sending and recieving messages
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to server:", socket.id);
-    });
-
-    socket.on("receiveMessage", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-
-    return () => {
-      socket.off("connect");
-      socket.off("receiveMessage");
-    };
-  }, []);
 
   //Function for for showing typing
   useEffect(() => {
@@ -89,13 +75,28 @@ export const Chat = ({ setOpen }) => {
         return;
       }
 
-      socket.emit("sendMessage", message); // Broadcast to socket
+      socket.emit("sendingMessage", message); // Broadcast to socket
 
       settext(""); // Clear the input
     } catch (error) {
       console.error("Error while sending message:", error);
     }
   };
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Connected to server:", socket.id);
+    });
+
+    socket.on("receiveMessage", (msg) => {
+      console.log("Recieved", msg);
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("receiveMessage");
+    };
+  }, []);
 
   useEffect(() => {
     console.log("Message", messages?.message, data);

@@ -85,9 +85,9 @@ app.get("/message", getMessage);
 app.delete("/flush", router);
 
 io.on("connection", (socket) => {
-  socket.on("sendMessage", (msg) => {
+  socket.on("sendingMessage", (msg) => {
     console.log("message", msg);
-    socket.emit("receiveMessage", msg);
+    io.emit("receiveMessage", msg);
   });
   socket.on("typing", (name) => {
     console.log("Typing...", name);

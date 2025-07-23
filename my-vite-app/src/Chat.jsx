@@ -3,12 +3,14 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import useApi from "./hooks/useSwr";
 
-const socket = io("http://localhost:5001"); // ✅ Use your backend address
+const socket = io("http://localhost:5000"); // ✅ Use your backend address
 
 export const Chat = ({ setOpen }) => {
   const [text, settext] = useState("");
   const [status, setStatus] = useState("");
-  const [messages, setMessages] = useState([]);
+  const { data } = useApi("/message");
+
+  const [messages, setMessages] = useState([data]);
   const token = localStorage.getItem("token");
   const decode = jwtDecode(token);
   const timestamp = 1753092158438; // your timestamp in ms
@@ -36,9 +38,6 @@ export const Chat = ({ setOpen }) => {
       socket.off("receiveMessage");
     };
   }, []);
-
-  const { data } = useApi("/message");
-  console.log("message", data);
 
   //Function for for showing typing
   useEffect(() => {
@@ -69,68 +68,77 @@ export const Chat = ({ setOpen }) => {
 
     socket.emit("typing", decode?.name); // you sending your name
   };
-
   const sendMessage = async () => {
-    const response = await fetch("http://localhost:5001/user/message", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        text: text,
-        time: Date.now(),
-        sender: decode?.name,
-      }),
-    });
-    const message = await response.json();
+    try {
+      const response = await fetch("http://localhost:5000/user/message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text,
+          time: Date.now(),
+          sender: decode?.name,
+        }),
+      });
 
-    if (response.ok) {
-      socket.emit("sendMessage", message);
+      const message = await response.json();
+
+      if (!response.ok) {
+        console.error("Failed to send message:", message);
+        return;
+      }
+
+      socket.emit("sendMessage", message); // Broadcast to socket
+
+      settext(""); // Clear the input
+    } catch (error) {
+      console.error("Error while sending message:", error);
     }
-
-    settext("");
   };
+
   useEffect(() => {
-    console.log("");
-  });
-  console.log("Message", messages);
+    console.log("Message", messages?.message, data);
+  }, [messages, data]);
+
   return (
     <div className="flex items-center flex-col">
       <h2>Chat</h2>
 
-      <ul className=" w-150 p-4 space-y-2">
-        {messages?.map((msg, i) => {
-          const isMe = decode?.name === msg?.sender;
-          return (
-            <div
-              key={i}
-              className={`flex flex-col max-w-[75%] rounded-xl m-2 px-2 py-1 ${
-                isMe ? "self-end items-end" : "self-start items-start"
-              }`}
-            >
-              {/* Sender name (only for others) */}
-              {!isMe && (
-                <p className="text-[12px] font-semibold text-gray-700 mb-1">
-                  {msg?.sender}
-                </p>
-              )}
-
-              {/* Message bubble */}
+      <div className="max-h-[400px] overflow-y-auto w-full flex  justify-center">
+        <ul className="w-150 p-4 space-y-2">
+          {data?.message?.map((msg, i) => {
+            const isMe = decode?.name === msg?.sender;
+            return (
               <div
-                className={`px-3 py-2 rounded-xl text-sm break-words ${
-                  isMe
-                    ? "bg-green-300 text-white rounded-br-none"
-                    : "bg-blue-300 text-white rounded-bl-none shadow"
+                key={i}
+                className={`flex flex-col max-w-[75%] rounded-xl m-2 px-2 py-1 ${
+                  isMe ? "self-end items-end" : "self-start items-start"
                 }`}
               >
-                <p>{msg?.text}</p>
-              </div>
+                {!isMe && (
+                  <p className="text-[12px] font-semibold text-gray-700 mb-1">
+                    {msg?.sender}
+                  </p>
+                )}
 
-              <p className="text-xs text-gray-500">{istTime}</p>
-            </div>
-          );
-        })}
-      </ul>
+                <div
+                  className={`px-3 py-2 rounded-xl text-sm break-words ${
+                    isMe
+                      ? "bg-green-300 text-white rounded-br-none"
+                      : "bg-blue-300 text-white rounded-bl-none shadow"
+                  }`}
+                >
+                  <p>{msg?.text}</p>
+                </div>
+
+                <p className="text-xs text-gray-500">{istTime}</p>
+              </div>
+            );
+          })}
+        </ul>
+      </div>
+
       {status && <p className="text-sm italic text-gray-500 px-2">{status}</p>}
 
       <div className="flex items-center gap-2 bg-white px-3 py-2 shadow-md rounded-full w-full max-w-[600px] mx-auto">

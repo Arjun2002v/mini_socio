@@ -1,5 +1,5 @@
 import { jwtDecode } from "jwt-decode";
-import { useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import useApi from "./hooks/useSwr";
 
@@ -8,6 +8,7 @@ const socket = io("http://localhost:5000"); // ✅ Use your backend address
 export const Chat = ({ setOpen }) => {
   const [text, settext] = useState("");
   const [status, setStatus] = useState("");
+  const bottomRef = useRef(null);
   const { data } = useApi("/message");
 
   const [messages, setMessages] = useState([]);
@@ -91,6 +92,7 @@ export const Chat = ({ setOpen }) => {
       socket.emit("sendingMessage", message); // Broadcast to socket
 
       settext(""); // Clear the input
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     } catch (error) {
       console.error("Error while sending message:", error);
     }
@@ -114,6 +116,9 @@ export const Chat = ({ setOpen }) => {
   useEffect(() => {
     console.log("Updated messages:", messages);
   }, [messages]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
 
   return (
     <div className="flex items-center flex-col">
@@ -150,6 +155,7 @@ export const Chat = ({ setOpen }) => {
               </div>
             );
           })}
+          <div ref={bottomRef} />
         </ul>
       </div>
 

@@ -207,7 +207,13 @@ exports.saveMessage = async (req, res) => {
     const { sender, text, time } = req.body;
     const data = new messages({ sender, time, text });
     const newMessage = await data.save();
-    res.status(201).json({ message: newMessage });
+    res
+      .status(201)
+      .json({
+        text: req.body.text,
+        sender: req.body.sender,
+        time: req.body.time,
+      });
   } catch {
     res.sendStatus(201).json({ error: "Error saving the message" });
   }

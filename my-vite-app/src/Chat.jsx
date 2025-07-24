@@ -10,7 +10,7 @@ export const Chat = ({ setOpen }) => {
   const [status, setStatus] = useState("");
   const { data } = useApi("/message");
 
-  const [messages, setMessages] = useState([data]);
+  const [messages, setMessages] = useState([]);
   const token = localStorage.getItem("token");
   const decode = jwtDecode(token);
   const timestamp = 1753092158438; // your timestamp in ms
@@ -54,6 +54,19 @@ export const Chat = ({ setOpen }) => {
 
     socket.emit("typing", decode?.name); // you sending your name
   };
+
+  useEffect(() => {
+    if (!data) return;
+
+    // Prevent re-overwriting messages if already set
+    setMessages((prev) => {
+      if (prev.length === 0 && Array.isArray(data.message)) {
+        return data.message;
+      }
+      return prev; // Don't overwrite real-time messages
+    });
+  }, [data]);
+
   const sendMessage = async () => {
     try {
       const response = await fetch("http://localhost:5000/user/message", {
@@ -88,8 +101,8 @@ export const Chat = ({ setOpen }) => {
     });
 
     socket.on("receiveMessage", (msg) => {
-      console.log("Recieved", msg);
       setMessages((prev) => [...prev, msg]);
+      console.log("Received message:", msg);
     });
 
     return () => {
@@ -99,8 +112,8 @@ export const Chat = ({ setOpen }) => {
   }, []);
 
   useEffect(() => {
-    console.log("Message", messages?.message, data);
-  }, [messages, data]);
+    console.log("Updated messages:", messages);
+  }, [messages]);
 
   return (
     <div className="flex items-center flex-col">
@@ -108,7 +121,7 @@ export const Chat = ({ setOpen }) => {
 
       <div className="max-h-[400px] overflow-y-auto w-full flex  justify-center">
         <ul className="w-150 p-4 space-y-2">
-          {data?.message?.map((msg, i) => {
+          {messages?.map((msg, i) => {
             const isMe = decode?.name === msg?.sender;
             return (
               <div

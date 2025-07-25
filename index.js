@@ -25,6 +25,7 @@ const http = require("http");
 
 //For Creating Server so that it can connect
 const { Server } = require("socket.io");
+const user = require("./Schema/user");
 
 const server = http.createServer(app);
 
@@ -83,15 +84,50 @@ app.post("/unfollow/:userId", verifyToken, unfollows);
 app.get("/message", getMessage);
 
 app.delete("/flush", router);
+let users = {};
 
 io.on("connection", (socket) => {
+  //Sending Message
+
   socket.on("sendingMessage", (msg) => {
     console.log("message", msg);
     io.emit("receiveMessage", msg);
   });
+
+  //Showing Tyoing Status when someone is typing
+
   socket.on("typing", (name) => {
     console.log("Typing...", name);
     socket.broadcast.emit("typing", `${name} is typing...`);
+  });
+
+  //Private Messaging
+
+  //Saving the UserID
+  socket.on("register", (userId) => {
+    users[userId] = socket.id;
+  });
+
+  //Handle Sending User Message
+  socket.on("private", ({ sender, receiver, text }) => {
+    const recieverSocketId = users[receiver];
+    if (recieverSocketId) {
+      io.to(recieverSocketId).emit("receiveMessage", {
+        sender,
+        receiver,
+        text,
+      });
+    }
+  });
+
+  //Disconnect the Message
+  socket.on("disconnect", () => {
+    for (let user in users) {
+      if (users[user] === socket.id) {
+        delete user[users];
+        break;
+      }
+    }
   });
 });
 

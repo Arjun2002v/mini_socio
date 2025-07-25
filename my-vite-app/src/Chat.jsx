@@ -1,5 +1,5 @@
 import { jwtDecode } from "jwt-decode";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import useApi from "./hooks/useSwr";
 
@@ -9,6 +9,7 @@ export const Chat = ({ setOpen }) => {
   const [text, settext] = useState("");
   const [status, setStatus] = useState("");
   const bottomRef = useRef(null);
+  const enter = useRef(null);
   const { data } = useApi("/message");
 
   const [messages, setMessages] = useState([]);
@@ -54,6 +55,11 @@ export const Chat = ({ setOpen }) => {
     settext(e.target.value);
 
     socket.emit("typing", decode?.name); // you sending your name
+  };
+  const keyPress = (e) => {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
   };
 
   useEffect(() => {
@@ -122,8 +128,6 @@ export const Chat = ({ setOpen }) => {
 
   return (
     <div className="flex items-center flex-col">
-      <h2>Chat</h2>
-
       <div className="max-h-[400px] overflow-y-auto w-full flex  justify-center">
         <ul className="w-150 p-4 space-y-2">
           {messages?.map((msg, i) => {
@@ -164,6 +168,8 @@ export const Chat = ({ setOpen }) => {
       <div className="flex items-center gap-2 bg-white px-3 py-2 shadow-md rounded-full w-full max-w-[600px] mx-auto">
         <input
           type="text"
+          ref={enter}
+          onKeyDown={keyPress}
           placeholder="Type a message"
           value={text}
           onChange={handleTyping}
@@ -172,7 +178,10 @@ export const Chat = ({ setOpen }) => {
 
         <button
           disabled={!text}
-          onClick={sendMessage}
+          onClick={() => {
+            sendMessage();
+            keyPress();
+          }}
           className={`bg-green-400 hover:bg-green-600 text-white rounded-md p-1 w-20 h-10 flex items-center justify-center ${
             !text ? "opacity-50 cursor-not-allowed" : ""
           }`}
@@ -183,7 +192,7 @@ export const Chat = ({ setOpen }) => {
 
       <button
         onClick={() => setOpen(false)}
-        className="cursor-pointer bg-red-400 p-2 rounded-md text-white mt-10  "
+        className="cursor-pointer bg-red-400 p-2 rounded-md text-white mt-10"
       >
         Cancel
       </button>

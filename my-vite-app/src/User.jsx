@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
 import useApi from "./hooks/useSwr";
 import toast, { Toaster } from "react-hot-toast";
+import { useState } from "react";
+import { Chat } from "./Chat";
 
 const User = () => {
   const { id } = useParams();
@@ -22,6 +24,7 @@ const User = () => {
       toast.error("Error Following ");
     }
   };
+  const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -42,18 +45,27 @@ const User = () => {
           <p>{user?.details?.name}</p>
           {user?.details?.bio && <p>{user?.details?.bio}</p>}
 
-          <div className="flex  gap-4">
+          <div className="flex  font-bold gap-4">
             <p>Followers: {user?.details?.followers?.length}</p>
             <p>Following: {user?.details?.following?.length}</p>
           </div>
-          <p
-            className="bg-blue-500 text-white font-medium p-3 rounded-md w-20 flex items-center justify-center cursor-pointer"
-            onClick={() => follow(user?.details?._id)}
-          >
-            Follow
-          </p>
+          <div className="flex gap-4">
+            <p
+              className="bg-blue-500 text-white text-[12px] font-medium p-2 rounded-md w-20 flex items-center justify-center cursor-pointer"
+              onClick={() => follow(user?.details?._id)}
+            >
+              Follow
+            </p>
+            <p
+              className="bg-blue-500 text-[12px] text-white font-medium p-2 rounded-md w-20 flex items-center justify-center cursor-pointer"
+              onClick={() => setOpen(!open)}
+            >
+              Message
+            </p>
+          </div>
         </>
       </div>
+      {open && <Chat setOpen={setOpen} />}
       <Toaster />
     </>
   );

@@ -5,6 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 import Topbar from "./Topbar";
 import { Chat } from "./Chat";
 import { jwtDecode } from "jwt-decode";
+import { Follow } from "./Follow";
 
 const Dash = () => {
   const { id } = useParams();
@@ -79,7 +80,7 @@ const Dash = () => {
         )}
       </div>
       <p onClick={() => setOpen("true")}>Lets Chat</p>
-      {open && open === "true" ? <Chat setOpen={setOpen} /> : <></>}
+      {open && open === "true" ? <Follow setOpen={setOpen} /> : <></>}
     </div>
   );
 };

@@ -5,7 +5,7 @@ import useApi from "./hooks/useSwr";
 
 const socket = io("http://localhost:5000"); // ✅ Use your backend address
 
-export const Chat = ({ setOpen }) => {
+export const Chat = ({ setOpen, selectedId }) => {
   const [text, settext] = useState("");
   const [status, setStatus] = useState("");
   const bottomRef = useRef(null);
@@ -63,6 +63,7 @@ export const Chat = ({ setOpen }) => {
   };
 
   useEffect(() => {
+    socket.emit("register", decode?._id);
     if (!data) return;
 
     // Prevent re-overwriting messages if already set
@@ -72,9 +73,10 @@ export const Chat = ({ setOpen }) => {
       }
       return prev; // Don't overwrite real-time messages
     });
-  }, [data]);
+  }, [data, decode?._id]);
 
   const sendMessage = async () => {
+    const msg = { sender: decode?.name, text, receiver: selectedId };
     try {
       const response = await fetch("http://localhost:5000/user/message", {
         method: "POST",
@@ -82,9 +84,7 @@ export const Chat = ({ setOpen }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          text,
-          time: Date.now(),
-          sender: decode?.name,
+          msg,
         }),
       });
 
@@ -95,7 +95,11 @@ export const Chat = ({ setOpen }) => {
         return;
       }
 
-      socket.emit("sendingMessage", message); // Broadcast to socket
+      socket.emit("private", {
+        sender: decode?.name,
+        receiver: selectedId,
+        text: msg.text,
+      }); // Broadcast to socket
 
       settext(""); // Clear the input
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -127,7 +131,7 @@ export const Chat = ({ setOpen }) => {
   }, []);
 
   return (
-    <div className="flex items-center flex-col">
+    <div className="flex items-center flex-col bg-black text-white">
       <div className="max-h-[400px] overflow-y-auto w-full flex  justify-center">
         <ul className="w-150 p-4 space-y-2">
           {messages?.map((msg, i) => {
@@ -139,9 +143,13 @@ export const Chat = ({ setOpen }) => {
                   isMe ? "self-end items-end" : "self-start items-start"
                 }`}
               >
-                {!isMe && (
+                {!isMe ? (
                   <p className="text-[12px] font-semibold text-gray-700 mb-1">
                     {msg?.sender}
+                  </p>
+                ) : (
+                  <p className="text-[12px] font-semibold text-gray-700 mb-1">
+                    Me
                   </p>
                 )}
 

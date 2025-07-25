@@ -3,7 +3,9 @@ import Login from "./Auth/Login";
 
 const App = () => {
   <>
-    <Login />
+    <div className="bg-black">
+      <Login />
+    </div>
   </>;
 };
 

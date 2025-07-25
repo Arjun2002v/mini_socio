@@ -69,7 +69,7 @@ export const Posts = () => {
   return (
     <>
       <Topbar />
-      <div className="flex flex-col gap-5  ">
+      <div className="flex flex-col gap-5  bg-black ">
         <p className="text-4xl">Posts for you to read </p>
         {newpost?.map((item, index) => (
           <div className="flex gap-2 items-center" key={index}>

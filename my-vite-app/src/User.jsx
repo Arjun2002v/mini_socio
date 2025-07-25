@@ -3,6 +3,7 @@ import useApi from "./hooks/useSwr";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 import { Chat } from "./Chat";
+import Topbar from "./Topbar";
 
 const User = () => {
   const { id } = useParams();
@@ -28,7 +29,8 @@ const User = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center mt-30 gap-3">
+      <Topbar />
+      <div className="flex flex-col items-center mt-30 gap-3 bg-black text-white">
         <>
           <div className="rounded-4xl w-10 h-10 bg-amber-700">
             {user?.details?.avatar ? (
@@ -65,7 +67,7 @@ const User = () => {
           </div>
         </>
       </div>
-      {open && <Chat setOpen={setOpen} />}
+      {open && <Chat setOpen={setOpen} selectedId={user?.details?._id} />}
       <Toaster />
     </>
   );

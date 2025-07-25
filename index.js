@@ -89,11 +89,6 @@ let users = {};
 io.on("connection", (socket) => {
   //Sending Message
 
-  socket.on("sendingMessage", (msg) => {
-    console.log("message", msg);
-    io.emit("receiveMessage", msg);
-  });
-
   //Showing Tyoing Status when someone is typing
 
   socket.on("typing", (name) => {
@@ -110,6 +105,7 @@ io.on("connection", (socket) => {
 
   //Handle Sending User Message
   socket.on("private", ({ sender, receiver, text }) => {
+    console.log("Message", { sender, receiver, text });
     const recieverSocketId = users[receiver];
     if (recieverSocketId) {
       io.to(recieverSocketId).emit("receiveMessage", {

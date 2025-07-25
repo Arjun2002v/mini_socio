@@ -40,7 +40,7 @@ const Dash = () => {
   };
 
   return (
-    <div>
+    <div className="bg-black">
       <Topbar />
       <p>Hi {decoded?.name} Welcome to Mini_social</p>
       <div className="flex flex-col gap-2">

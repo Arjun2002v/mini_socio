@@ -44,12 +44,13 @@ const io = new Server(server, {
 });
 
 app.use(cors());
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 connectDB();
 if (!connectDB) {
   console.error("MongoDB URI not found in .env file");
   process.exit(1);
 }
+
 app.use(express.json());
 
 app.post("/signup", router);
@@ -104,17 +105,28 @@ io.on("connection", (socket) => {
   });
 
   //Handle Sending User Message
-  socket.on("private", ({ sender, receiver, text }) => {
-    console.log("Message", { sender, receiver, text });
-    const recieverSocketId = users[receiver];
-    if (recieverSocketId) {
-      io.to(recieverSocketId).emit("receiveMessage", {
+  socket.on(
+    "private",
+    ({ sender, receiver, text, receiverName, senderName }) => {
+      console.log("Message", {
         sender,
         receiver,
         text,
+        receiverName,
+        senderName,
       });
+      const recieverSocketId = users[receiver];
+      if (recieverSocketId) {
+        io.to(recieverSocketId).emit("receiveMessage", {
+          sender,
+          receiver,
+          text,
+          receiverName,
+          senderName,
+        });
+      }
     }
-  });
+  );
 
   //Disconnect the Message
   socket.on("disconnect", () => {

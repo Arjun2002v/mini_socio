@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import useApi from "./hooks/useSwr";
 
-const socket = io("http://localhost:5000"); // ✅ Use your backend address
+const socket = io("http://localhost:5001"); // ✅ Use your backend address
 
-export const Chat = ({ setOpen, selectedId }) => {
+export const Chat = ({ setOpen, selectedId, selectUser }) => {
   const [text, settext] = useState("");
   const [status, setStatus] = useState("");
   const bottomRef = useRef(null);
@@ -76,16 +76,20 @@ export const Chat = ({ setOpen, selectedId }) => {
   }, [data, decode?._id]);
 
   const sendMessage = async () => {
-    const msg = { sender: decode?.name, text, receiver: selectedId };
+    const msg = {
+      text,
+      receiver: selectedId,
+      receiverName: selectUser,
+
+      time: istTime,
+    };
     try {
-      const response = await fetch("http://localhost:5000/user/message", {
+      const response = await fetch("http://localhost:5001/user/message", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          msg,
-        }),
+        body: JSON.stringify(msg),
       });
 
       const message = await response.json();
@@ -96,9 +100,11 @@ export const Chat = ({ setOpen, selectedId }) => {
       }
 
       socket.emit("private", {
-        sender: decode?.name,
+        sender: decode?._id,
+        receiverName: selectUser,
         receiver: selectedId,
-        text: msg.text,
+        senderName: decode?.name,
+        text: msg?.text,
       }); // Broadcast to socket
 
       settext(""); // Clear the input
@@ -135,7 +141,7 @@ export const Chat = ({ setOpen, selectedId }) => {
       <div className="max-h-[400px] overflow-y-auto w-full flex  justify-center">
         <ul className="w-150 p-4 space-y-2">
           {messages?.map((msg, i) => {
-            const isMe = decode?.name === msg?.sender;
+            const isMe = decode?.name !== msg?.sender;
             return (
               <div
                 key={i}
@@ -143,12 +149,13 @@ export const Chat = ({ setOpen, selectedId }) => {
                   isMe ? "self-end items-end" : "self-start items-start"
                 }`}
               >
+                {console.log("Sender:", decode?.name, "Receiver:", msg)}
                 {!isMe ? (
-                  <p className="text-[12px] font-semibold text-gray-700 mb-1">
-                    {msg?.sender}
+                  <p className="text-[12px] font-semibold text-white mb-1">
+                    {msg?.receiverName}
                   </p>
                 ) : (
-                  <p className="text-[12px] font-semibold text-gray-700 mb-1">
+                  <p className="text-[12px] font-semibold text-white mb-1">
                     Me
                   </p>
                 )}
@@ -156,14 +163,14 @@ export const Chat = ({ setOpen, selectedId }) => {
                 <div
                   className={`px-3 py-2 rounded-xl text-sm break-words ${
                     isMe
-                      ? "bg-green-300 text-white rounded-br-none"
-                      : "bg-blue-300 text-white rounded-bl-none shadow"
+                      ? "bg-green-300 text-white rounded-br-none flex  "
+                      : "bg-blue-300 text-white rounded-bl-none shadow  "
                   }`}
                 >
                   <p>{msg?.text}</p>
                 </div>
 
-                <p className="text-xs text-gray-500">{istTime}</p>
+                <p className="text-xs text-white">{istTime}</p>
               </div>
             );
           })}
@@ -181,7 +188,7 @@ export const Chat = ({ setOpen, selectedId }) => {
           placeholder="Type a message"
           value={text}
           onChange={handleTyping}
-          className="flex-1 outline-none px-4 py-2 text-sm rounded-full bg-gray-100 focus:bg-white"
+          className="flex-1 outline-none px-4 py-2 text-gray-700 text-sm rounded-full bg-gray-100 focus:bg-white"
         />
 
         <button

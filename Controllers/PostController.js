@@ -1,7 +1,8 @@
 const { param } = require("../routes/authRoutes");
-const messages = require("../Schema/messages");
+
 const post = require("../Schema/post");
 const user = require("../Schema/user");
+const Message = require("../Schema/messages");
 const { find, findById } = require("../Schema/user");
 const { Server } = require("socket.io");
 
@@ -204,24 +205,32 @@ exports.unfollows = async (req, res) => {
 
 exports.saveMessage = async (req, res) => {
   try {
-    const { sender, text, time } = req.body;
-    const data = new messages({ sender, time, text });
-    const newMessage = await data.save();
-    res
-      .status(201)
-      .json({
-        text: req.body.text,
-        sender: req.body.sender,
-        time: req.body.time,
-      });
-  } catch {
-    res.sendStatus(201).json({ error: "Error saving the message" });
+    const { sender, receiver, text, time, receiverName } = req.body;
+
+    console.log("Sender", { sender, receiver, text, time });
+
+    const newMessage = new Message({
+      sender,
+      receiver,
+      text,
+      time,
+      receiverName,
+    });
+    const saved = await newMessage.save();
+    console.log("Messages", saved);
+
+    res.status(201).json(saved);
+    // All good
+  } catch (err) {
+    console.error("Error saving message:", err); // For debugging
+    res.status(500).json({ error: "Error saving the message" });
   }
 };
 
 exports.getMessage = async (req, res) => {
   try {
-    const message = await messages.find().sort({ time: 1 });
+    const message = await Message.find().sort({ time: 1 });
+    console.log("mESSAGE", message);
     res.json({ message: message });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch messages" });

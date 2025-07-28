@@ -8,10 +8,11 @@ import Topbar from "./Topbar";
 const User = () => {
   const { id } = useParams();
   const { data: user } = useApi(`/users/${id ? id : null}`);
+  console.log("DATA", user);
 
   const follow = async (id) => {
     const token = localStorage.getItem("token");
-    const response = await fetch(`http://localhost:5000/follows/${id}`, {
+    const response = await fetch(`http://localhost:5001/follows/${id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -67,7 +68,13 @@ const User = () => {
           </div>
         </>
       </div>
-      {open && <Chat setOpen={setOpen} selectedId={user?.details?._id} />}
+      {open && (
+        <Chat
+          setOpen={setOpen}
+          selectedId={user?.details?._id}
+          selectUser={user?.details?.name}
+        />
+      )}
       <Toaster />
     </>
   );

@@ -13,6 +13,12 @@ const messages = new mongoose.Schema({
   time: {
     type: String,
   },
+  receiverName: {
+    type: String,
+  },
+  senderName: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model("Message", messages);

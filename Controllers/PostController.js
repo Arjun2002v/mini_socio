@@ -205,7 +205,7 @@ exports.unfollows = async (req, res) => {
 
 exports.saveMessage = async (req, res) => {
   try {
-    const { sender, receiver, text, time, receiverName } = req.body;
+    const { sender, receiver, text, time, receiverName, senderName } = req.body;
 
     console.log("Sender", { sender, receiver, text, time });
 
@@ -215,6 +215,7 @@ exports.saveMessage = async (req, res) => {
       text,
       time,
       receiverName,
+      senderName,
     });
     const saved = await newMessage.save();
     console.log("Messages", saved);

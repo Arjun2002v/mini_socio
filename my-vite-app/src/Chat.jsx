@@ -80,6 +80,7 @@ export const Chat = ({ setOpen, selectedId, selectUser }) => {
       text,
       receiver: selectedId,
       receiverName: selectUser,
+      senderName: decode?.name,
 
       time: istTime,
     };
@@ -98,6 +99,7 @@ export const Chat = ({ setOpen, selectedId, selectUser }) => {
         console.error("Failed to send message:", message);
         return;
       }
+      setMessages((prev) => [...prev, msg]);
 
       socket.emit("private", {
         sender: decode?._id,
@@ -114,15 +116,18 @@ export const Chat = ({ setOpen, selectedId, selectUser }) => {
     }
   };
   useEffect(() => {
+    // When socket connects
     socket.on("connect", () => {
       console.log("Connected to server:", socket.id);
     });
 
+    // When receiving a new message
     socket.on("receiveMessage", (msg) => {
+      console.log("Received message:", msg); // Log first
       setMessages((prev) => [...prev, msg]);
-      console.log("Received message:", msg);
     });
 
+    // Cleanup on unmount
     return () => {
       socket.off("connect");
       socket.off("receiveMessage");
@@ -141,18 +146,17 @@ export const Chat = ({ setOpen, selectedId, selectUser }) => {
       <div className="max-h-[400px] overflow-y-auto w-full flex  justify-center">
         <ul className="w-150 p-4 space-y-2">
           {messages?.map((msg, i) => {
-            const isMe = decode?.name !== msg?.sender;
+            const isMe = decode?.name !== msg?.senderName;
             return (
               <div
                 key={i}
                 className={`flex flex-col max-w-[75%] rounded-xl m-2 px-2 py-1 ${
-                  isMe ? "self-end items-end" : "self-start items-start"
+                  isMe ? "self-start items-start" : "self-end items-end "
                 }`}
               >
-                {console.log("Sender:", decode?.name, "Receiver:", msg)}
-                {!isMe ? (
+                {isMe ? (
                   <p className="text-[12px] font-semibold text-white mb-1">
-                    {msg?.receiverName}
+                    {msg?.senderName}
                   </p>
                 ) : (
                   <p className="text-[12px] font-semibold text-white mb-1">
@@ -162,7 +166,7 @@ export const Chat = ({ setOpen, selectedId, selectUser }) => {
 
                 <div
                   className={`px-3 py-2 rounded-xl text-sm break-words ${
-                    isMe
+                    !isMe
                       ? "bg-green-300 text-white rounded-br-none flex  "
                       : "bg-blue-300 text-white rounded-bl-none shadow  "
                   }`}

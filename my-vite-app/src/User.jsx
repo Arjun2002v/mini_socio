@@ -8,7 +8,6 @@ import Topbar from "./Topbar";
 const User = () => {
   const { id } = useParams();
   const { data: user } = useApi(`/users/${id ? id : null}`);
-  console.log("DATA", user);
 
   const follow = async (id) => {
     const token = localStorage.getItem("token");

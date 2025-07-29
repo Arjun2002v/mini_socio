@@ -90,7 +90,7 @@ let users = {};
 io.on("connection", (socket) => {
   //Sending Message
 
-  //Showing Tyoing Status when someone is typing
+  //Showing Typing Status when someone is typing
 
   socket.on("typing", (name) => {
     console.log("Typing...", name);
@@ -108,13 +108,6 @@ io.on("connection", (socket) => {
   socket.on(
     "private",
     ({ sender, receiver, text, receiverName, senderName }) => {
-      console.log("Message", {
-        sender,
-        receiver,
-        text,
-        receiverName,
-        senderName,
-      });
       const recieverSocketId = users[receiver];
       if (recieverSocketId) {
         io.to(recieverSocketId).emit("receiveMessage", {

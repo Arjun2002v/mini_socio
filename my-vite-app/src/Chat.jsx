@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import useApi from "./hooks/useSwr";
 
-const socket = io("http://localhost:5001"); // ✅ Use your backend address
+const socket = io("http://localhost:5000"); // ✅ Use your backend address
 
 export const Chat = ({ setOpen, selectedId, selectUser }) => {
   const [text, settext] = useState("");
@@ -85,7 +85,7 @@ export const Chat = ({ setOpen, selectedId, selectUser }) => {
       time: istTime,
     };
     try {
-      const response = await fetch("http://localhost:5001/user/message", {
+      const response = await fetch("http://localhost:5000/user/message", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -99,7 +99,6 @@ export const Chat = ({ setOpen, selectedId, selectUser }) => {
         console.error("Failed to send message:", message);
         return;
       }
-      setMessages((prev) => [...prev, msg]);
 
       socket.emit("private", {
         sender: decode?._id,

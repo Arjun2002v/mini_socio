@@ -16,7 +16,7 @@ export const Posts = () => {
   const liked = async (id) => {
     const token = localStorage.getItem("token");
 
-    const response = await fetch(`http://localhost:5001/posts/${id}/like`, {
+    const response = await fetch(`http://localhost:5000/posts/${id}/like`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -43,7 +43,7 @@ export const Posts = () => {
   const decoded = jwtDecode(token);
 
   const Delete = (id) => {
-    const response = fetch(`http://localhost:5001/posts/${id}`, {
+    const response = fetch(`http://localhost:5000/posts/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +54,7 @@ export const Posts = () => {
     }
   };
   const edit = (id) => {
-    const response = fetch(`http://localhost:5001/posts/${id}`, {
+    const response = fetch(`http://localhost:5000/posts/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

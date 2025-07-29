@@ -73,7 +73,6 @@ exports.editPost = async (req, res) => {
 exports.likePost = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log("request", req?.user?._id);
 
     const updatedPost = await post.findByIdAndUpdate(
       id,
@@ -168,11 +167,8 @@ exports.follow = async (req, res) => {
 exports.unfollows = async (req, res) => {
   try {
     const { userId } = req.params;
-    console.log("Target userId:", userId);
-    console.log("Current user:", req.user?._id);
 
     const targetUser = await user.findById(userId);
-    console.log("Before unfollow, followers:", targetUser.followers);
 
     const unfollow = await user.findByIdAndUpdate(
       userId,
@@ -181,8 +177,6 @@ exports.unfollows = async (req, res) => {
       },
       { new: true }
     );
-
-    console.log("After unfollow, followers:", unfollow.followers);
 
     await user.findByIdAndUpdate(
       req.user?._id,
@@ -218,7 +212,6 @@ exports.saveMessage = async (req, res) => {
       senderName,
     });
     const saved = await newMessage.save();
-    console.log("Messages", saved);
 
     res.status(201).json(saved);
     // All good
@@ -231,7 +224,7 @@ exports.saveMessage = async (req, res) => {
 exports.getMessage = async (req, res) => {
   try {
     const message = await Message.find().sort({ time: 1 });
-    console.log("mESSAGE", message);
+
     res.json({ message: message });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch messages" });

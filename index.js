@@ -44,7 +44,7 @@ const io = new Server(server, {
 });
 
 app.use(cors());
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 connectDB();
 if (!connectDB) {
   console.error("MongoDB URI not found in .env file");
@@ -102,6 +102,7 @@ io.on("connection", (socket) => {
   //Saving the UserID
   socket.on("register", (userId) => {
     users[userId] = socket.id;
+    console.log(`User registered: ${userId} => ${socket.id}`);
   });
 
   //Handle Sending User Message
@@ -118,14 +119,25 @@ io.on("connection", (socket) => {
           senderName,
         });
       }
+      const senderSocket = users[sender];
+
+      if (senderSocket) {
+        io.to(senderSocket).emit("receiveMessage", {
+          sender,
+          receiver,
+          text,
+          receiverName,
+          senderName,
+        });
+      }
     }
   );
 
   //Disconnect the Message
   socket.on("disconnect", () => {
-    for (let user in users) {
-      if (users[user] === socket.id) {
-        delete user[users];
+    for (const [userId, socketId] of Object.entries(users)) {
+      if (socketId === socket.id) {
+        delete users[userId];
         break;
       }
     }

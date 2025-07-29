@@ -11,7 +11,7 @@ const User = () => {
 
   const follow = async (id) => {
     const token = localStorage.getItem("token");
-    const response = await fetch(`http://localhost:5001/follows/${id}`, {
+    const response = await fetch(`http://localhost:5000/follows/${id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

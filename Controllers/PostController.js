@@ -201,8 +201,6 @@ exports.saveMessage = async (req, res) => {
   try {
     const { sender, receiver, text, time, receiverName, senderName } = req.body;
 
-    console.log("Sender", { sender, receiver, text, time });
-
     const newMessage = new Message({
       sender,
       receiver,

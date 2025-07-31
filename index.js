@@ -133,6 +133,9 @@ io.on("connection", (socket) => {
     }
   );
 
+  socket.on("sendNotification", (message, userId) => {
+    io.to(users[userId]).emit("getNotification", { message });
+  });
   //Disconnect the Message
   socket.on("disconnect", () => {
     for (const [userId, socketId] of Object.entries(users)) {

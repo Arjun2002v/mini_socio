@@ -100,6 +100,10 @@ export const Chat = ({ setOpen, selectedId, selectUser }) => {
         return;
       }
 
+      socket.emit("sendNotification", `${decode?.name} send a new message`, {
+        receiver: selectUser,
+      });
+
       socket.emit("private", {
         sender: decode?._id,
         receiverName: selectUser,

@@ -5,7 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { io } from "socket.io-client";
 
 export const Notification = () => {
-  const socket = io("http://localhost:5000");
+  const socket = io("http://localhost:5001");
 
   useEffect(() => {
     socket.connect("connect", () => {

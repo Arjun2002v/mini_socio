@@ -16,7 +16,7 @@ const Login = () => {
   const submit = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/signup", {
+      const response = await fetch("http://localhost:5001/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,7 +28,7 @@ const Login = () => {
 
       if (response.ok) {
         toast.success("Signup successful", {
-          duration: 5000,
+          duration: 5001,
           position: "bottom-center",
         });
 

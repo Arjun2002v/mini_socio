@@ -28,6 +28,7 @@ const { Server } = require("socket.io");
 const user = require("./Schema/user");
 const multer = require("multer");
 const messages = require("./Schema/messages");
+const path = require("path");
 
 const server = http.createServer(app);
 
@@ -53,21 +54,29 @@ if (!connectDB) {
   process.exit(1);
 }
 
-//This line is for setting storing engine
+app.use(express.json());
+
+// --- FILE UPLOAD CONFIG ---
 const storage = multer.diskStorage({
-  destination: "/.uploads/",
-  filename: (req, res, cb) => {
-    cb(null, Date.now() + path.extname(file.originalName)); // This is fo unique filename
+  destination: path.join(__dirname, "uploads"),
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
+const upload = multer({ storage });
 
-const upload = multer({ storage: storage });
-
+// --- FILE UPLOAD ROUTE ---
+// MUST be placed before any app.use(express.json()) in your project
 app.post("/upload", upload.single("file"), (req, res) => {
-  res.send({ messages: "File Uploaded SuccessFully", file: req.file });
+  console.log("Files", req.file);
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded" });
+  }
+  res.json({
+    message: "File uploaded successfully",
+    file: req?.file,
+  });
 });
-
-app.use(express.json());
 
 app.post("/signup", router);
 

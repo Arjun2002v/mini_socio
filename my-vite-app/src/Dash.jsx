@@ -18,6 +18,7 @@ const Dash = () => {
   const [open, setOpen] = useState("false");
 
   const [post, setPost] = useState("");
+  const [select, setFile] = useState(null);
 
   const nav = useNavigate();
 
@@ -39,6 +40,29 @@ const Dash = () => {
     await response.json();
   };
 
+  const handleFile = async () => {
+    if (!select) {
+      alert("Please select a file");
+      return;
+    }
+
+    const form = new FormData();
+    form.append("file", select);
+
+    await fetch("http://localhost:5001/upload", {
+      method: "POST",
+      body: form, // send FormData directly
+      // ❌ DO NOT set Content-Type here, let the browser set it
+    })
+      .then((res) => res.json())
+      .then((data) => console.log(data))
+      .catch((err) => console.error(err));
+  };
+
+  const handleFileChange = (e) => {
+    setFile(e.target.file[0]);
+  };
+
   return (
     <div className="bg-black">
       <Topbar />
@@ -55,17 +79,19 @@ const Dash = () => {
               onChange={(e) => setPost(e.target.value)}
               value={post}
             />
-            {/* <div className="mb-4">
+            <div className="mb-4">
               <label htmlFor="file-upload" className="cursor-pointer">
                 Add Pictures
               </label>
               <input
                 id="file-upload"
-                multiple
                 type="file"
-                className="absolute top-0 left-0 h-full w-full cursor-pointer opacity-0"
+                className="left-0 h-full w-full cursor-pointer opacity-0"
+                onChange={handleFileChange} // update state on file selection
               />
-            </div> */}
+              <button onClick={handleFile}>Upload</button>{" "}
+              {/* trigger upload */}
+            </div>
 
             <div
               className="bg-blue-600 text-white w-40 flex justify-center rounded-2xl cursor-pointer p-2"

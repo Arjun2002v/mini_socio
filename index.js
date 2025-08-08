@@ -26,6 +26,8 @@ const http = require("http");
 //For Creating Server so that it can connect
 const { Server } = require("socket.io");
 const user = require("./Schema/user");
+const multer = require("multer");
+const messages = require("./Schema/messages");
 
 const server = http.createServer(app);
 
@@ -50,6 +52,20 @@ if (!connectDB) {
   console.error("MongoDB URI not found in .env file");
   process.exit(1);
 }
+
+//This line is for setting storing engine
+const storage = multer.diskStorage({
+  destination: "/.uploads/",
+  filename: (req, res, cb) => {
+    cb(null, Date.now() + path.extname(file.originalName)); // This is fo unique filename
+  },
+});
+
+const upload = multer({ storage: storage });
+
+app.post("/upload", upload.single("file"), (req, res) => {
+  res.send({ messages: "File Uploaded SuccessFully", file: req.file });
+});
 
 app.use(express.json());
 

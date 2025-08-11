@@ -22,13 +22,17 @@ const Dash = () => {
 
   const nav = useNavigate();
 
-  const submit = async (id) => {
+  const submit = async () => {
+    const form = new FormData();
+
+    form.append("content", post);
+    form.append("userId", decoded?._id);
+    form.append("file", select);
+
     const response = await fetch("http://localhost:5001/posts", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content: post, userId: id }),
+
+      body: form,
     });
     if (response.ok) {
       toast.success("Post created successfully");
@@ -45,28 +49,17 @@ const Dash = () => {
       alert("Please select a file");
       return;
     }
-
-    const form = new FormData();
-    form.append("file", select);
-
-    const response = await fetch("http://localhost:5001/upload", {
-      method: "POST",
-      body: form,
-    })
-      .then((res) => res.json())
-      .then((data) => console.log(data))
-      .catch((err) => console.error(err));
-    if (response.ok) {
-      toast.success("Uploaded SuccessFully");
-    } else {
-      toast.error("An error occured");
-    }
   };
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
     const files = Array.from(e.target.files);
-    setPosts((prev) => [...prev, ...files]);
+
+    const imagesPreview = files.map((item) => ({
+      item,
+      pre: URL.createObjectURL(item),
+    }));
+    setPosts((prev) => [...prev, ...imagesPreview]);
   };
 
   return (
@@ -96,13 +89,19 @@ const Dash = () => {
                 onChange={handleFileChange}
               />
               <button onClick={handleFile}>Upload</button>{" "}
-              {/* trigger upload */}
             </div>
             {posts?.map((item) => (
               <>
                 <div className="flex justify-center gap-4 items-center border-1 border-white w-fit p-4 rounded-md">
-                  <p>{item?.name}</p>
-                  <p>{Math.round(item.size / 1024)} KB</p>
+                  <img
+                    src={item?.pre}
+                    alt={item?.file?.name}
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "cover",
+                    }}
+                  />
                 </div>
               </>
             ))}

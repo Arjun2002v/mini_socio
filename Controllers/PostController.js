@@ -2,9 +2,18 @@ const { param } = require("../routes/authRoutes");
 
 const post = require("../Schema/post");
 const user = require("../Schema/user");
+const multer = require("multer");
 const Message = require("../Schema/messages");
 const { find, findById } = require("../Schema/user");
 const { Server } = require("socket.io");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: path.join(__dirname, "uploads/"),
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
 
 //Get all Posts Logic
 
@@ -17,18 +26,21 @@ const io = new Server();
 // Create a Post Logic
 
 exports.createPost = async (req, res) => {
-  const { content, media, userId } = req.body;
+  const { content, userId } = req.body;
+
+  const imagesPath = req.files
+    ? req.files.map((file) => `/uploads/${file.filename}`)
+    : [];
 
   if (!content) {
     return res.status(400).json({ message: "Content is required" });
   }
-  // if (!media) {
-  //   res.json({ message: "Media is needed to create a Post" }).sendStatus(201);
-  // }
+
   const newPost = await post({
     content,
-    // media: media || [],
+
     createdBy: userId,
+    images: imagesPath,
   });
 
   const data = await newPost.save();

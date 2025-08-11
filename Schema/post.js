@@ -22,6 +22,7 @@ const post = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
   },
+  images: [{ type: String }],
 });
 
 module.exports = mongoose.model("post", post);

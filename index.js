@@ -26,9 +26,8 @@ const http = require("http");
 //For Creating Server so that it can connect
 const { Server } = require("socket.io");
 const user = require("./Schema/user");
-const multer = require("multer");
+
 const messages = require("./Schema/messages");
-const path = require("path");
 
 const server = http.createServer(app);
 
@@ -55,25 +54,6 @@ if (!connectDB) {
 }
 
 app.use(express.json());
-
-const storage = multer.diskStorage({
-  destination: path.join(__dirname, "uploads"),
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-const upload = multer({ storage });
-
-app.post("/upload", upload.single("file"), (req, res) => {
-  console.log("Files", req.file);
-  if (!req.file) {
-    return res.status(400).json({ error: "No file uploaded" });
-  }
-  res.json({
-    message: "File uploaded successfully",
-    file: req?.file,
-  });
-});
 
 app.post("/signup", router);
 

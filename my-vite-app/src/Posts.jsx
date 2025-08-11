@@ -65,6 +65,7 @@ export const Posts = () => {
       toast.success("Edit Done Successfully !!");
     }
   };
+  console.log("newpost", newpost);
 
   return (
     <>
@@ -74,6 +75,14 @@ export const Posts = () => {
         {newpost?.map((item, index) => (
           <div className="flex gap-2 items-center" key={index}>
             <div className="flex flex-col gap-2">
+              {item?.images?.map((image, index) => (
+                <img
+                  src={image}
+                  alt=""
+                  key={index}
+                  className="w-40 h-40 object-cover"
+                />
+              ))}
               <p>{item?.content}</p>
               <p>
                 Post Made by{" "}

@@ -18,29 +18,36 @@ const Dash = () => {
   const [posts, setPosts] = useState([]);
 
   const [post, setPost] = useState("");
-  const [select, setFile] = useState(null);
 
   const nav = useNavigate();
+
+  const [select, setFile] = useState([]);
 
   const submit = async () => {
     const form = new FormData();
 
     form.append("content", post);
     form.append("userId", decoded?._id);
-    form.append("file", select);
+
+    // Append all selected files
+    for (let i = 0; i < select.length; i++) {
+      form.append("images", select[i]);
+    }
 
     const response = await fetch("http://localhost:5001/posts", {
       method: "POST",
-
       body: form,
     });
+
     if (response.ok) {
       toast.success("Post created successfully");
       setPost("");
+      setFile([]);
       nav("/home/posts");
     } else {
       toast.error("Post creation failed");
     }
+
     await response.json();
   };
 
@@ -52,7 +59,7 @@ const Dash = () => {
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    setFile(Array.from(e.target.files));
     const files = Array.from(e.target.files);
 
     const imagesPreview = files.map((item) => ({

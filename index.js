@@ -56,7 +56,6 @@ if (!connectDB) {
 
 app.use(express.json());
 
-// --- FILE UPLOAD CONFIG ---
 const storage = multer.diskStorage({
   destination: path.join(__dirname, "uploads"),
   filename: (req, file, cb) => {
@@ -65,8 +64,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// --- FILE UPLOAD ROUTE ---
-// MUST be placed before any app.use(express.json()) in your project
 app.post("/upload", upload.single("file"), (req, res) => {
   console.log("Files", req.file);
   if (!req.file) {

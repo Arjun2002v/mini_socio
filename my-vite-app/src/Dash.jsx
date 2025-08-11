@@ -1,21 +1,21 @@
 import { useNavigate, useParams } from "react-router-dom";
-import useApi from "./hooks/useSwr";
+
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import Topbar from "./Topbar";
-import { Chat } from "./Chat";
+
 import { jwtDecode } from "jwt-decode";
 import { Follow } from "./Follow";
 
 const Dash = () => {
   const { id } = useParams();
-  const { data } = useApi(`/users/${id}`);
-  console.log("data", data);
+
   const token = localStorage.getItem("token");
   const decoded = jwtDecode(token);
   const [active, setActive] = useState(false);
 
   const [open, setOpen] = useState("false");
+  const [posts, setPosts] = useState([]);
 
   const [post, setPost] = useState("");
   const [select, setFile] = useState(null);
@@ -49,18 +49,24 @@ const Dash = () => {
     const form = new FormData();
     form.append("file", select);
 
-    await fetch("http://localhost:5001/upload", {
+    const response = await fetch("http://localhost:5001/upload", {
       method: "POST",
-      body: form, // send FormData directly
-      // ❌ DO NOT set Content-Type here, let the browser set it
+      body: form,
     })
       .then((res) => res.json())
       .then((data) => console.log(data))
       .catch((err) => console.error(err));
+    if (response.ok) {
+      toast.success("Uploaded SuccessFully");
+    } else {
+      toast.error("An error occured");
+    }
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.file[0]);
+    setFile(e.target.files[0]);
+    const files = Array.from(e.target.files);
+    setPosts((prev) => [...prev, ...files]);
   };
 
   return (
@@ -87,11 +93,19 @@ const Dash = () => {
                 id="file-upload"
                 type="file"
                 className="left-0 h-full w-full cursor-pointer opacity-0"
-                onChange={handleFileChange} // update state on file selection
+                onChange={handleFileChange}
               />
               <button onClick={handleFile}>Upload</button>{" "}
               {/* trigger upload */}
             </div>
+            {posts?.map((item) => (
+              <>
+                <div className="flex justify-center gap-4 items-center border-1 border-white w-fit p-4 rounded-md">
+                  <p>{item?.name}</p>
+                  <p>{Math.round(item.size / 1024)} KB</p>
+                </div>
+              </>
+            ))}
 
             <div
               className="bg-blue-600 text-white w-40 flex justify-center rounded-2xl cursor-pointer p-2"

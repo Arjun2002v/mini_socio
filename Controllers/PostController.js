@@ -21,8 +21,6 @@ exports.createPost = async (req, res) => {
   const { content, userId } = req.body;
   console.log("Images", req.files);
 
-  const imagePath = `/uploads/${req.file.filename}`;
-
   if (!content) {
     return res.status(400).json({ message: "Content is required" });
   }
@@ -31,7 +29,7 @@ exports.createPost = async (req, res) => {
     content,
 
     createdBy: userId,
-    images: imagePath,
+    images: req.files,
   });
 
   const data = await newPost.save();
@@ -200,6 +198,7 @@ exports.unfollows = async (req, res) => {
   }
 };
 
+//Save all the message in mongo
 exports.saveMessage = async (req, res) => {
   try {
     const { sender, receiver, text, time, receiverName, senderName } = req.body;
@@ -222,6 +221,7 @@ exports.saveMessage = async (req, res) => {
   }
 };
 
+//Get all messages
 exports.getMessage = async (req, res) => {
   try {
     const message = await Message.find().sort({ time: 1 });

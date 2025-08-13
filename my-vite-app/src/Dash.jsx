@@ -23,15 +23,16 @@ const Dash = () => {
 
   const [select, setFile] = useState([]);
 
-  const submit = async () => {
+  const submit = async (e) => {
     const form = new FormData();
+    const files = e.target.files;
 
     form.append("content", post);
     form.append("userId", decoded?._id);
 
     // Append all selected files
-    for (let i = 0; i < select.length; i++) {
-      form.append("images", select[i]);
+    for (let i = 0; i < files.length; i++) {
+      form.append("images", files[i]);
     }
 
     const response = await fetch("http://localhost:5001/posts", {

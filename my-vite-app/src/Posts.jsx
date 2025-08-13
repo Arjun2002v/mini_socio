@@ -25,7 +25,6 @@ export const Posts = () => {
     });
 
     const data = await response.json();
-    console.log("user", id);
 
     newsetPosts((prev) =>
       prev?.map((item) =>

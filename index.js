@@ -55,6 +55,7 @@ if (!connectDB) {
 }
 
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const storage = multer.diskStorage({
   destination: path.join(__dirname, "uploads"),

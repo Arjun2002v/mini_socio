@@ -64,7 +64,10 @@ export const Posts = () => {
       toast.success("Edit Done Successfully !!");
     }
   };
-  console.log("newpost", newpost);
+  console.log(
+    "newpost",
+    newpost?.map((item) => item?.images.map((item) => item))
+  );
 
   return (
     <>

@@ -19,6 +19,7 @@ const io = new Server();
 
 exports.createPost = async (req, res) => {
   const { content, userId } = req.body;
+
   console.log("Images", req.files);
 
   if (!content) {
@@ -29,7 +30,9 @@ exports.createPost = async (req, res) => {
     content,
 
     createdBy: userId,
-    images: req.files,
+    images: req.files.map(
+      (file) => `${req.protocol}://${req.get("host")}/uploads/${file.filename}`
+    ),
   });
 
   const data = await newPost.save();

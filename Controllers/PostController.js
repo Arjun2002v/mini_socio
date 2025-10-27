@@ -1,34 +1,45 @@
 const { param } = require("../routes/authRoutes");
+
 const post = require("../Schema/post");
 const user = require("../Schema/user");
+
+const Message = require("../Schema/messages");
 const { find, findById } = require("../Schema/user");
+const { Server } = require("socket.io");
 
 //Get all Posts Logic
 
 exports.getPost = async (req, res) => {
   const posts = await post.find().populate("createdBy", "name");
-  res.send(posts);
+  res.json({ data: posts });
 };
+const io = new Server();
 
 // Create a Post Logic
 
 exports.createPost = async (req, res) => {
-  const { content, media, userId } = req.body;
+  const { content, userId } = req.body;
+
+  console.log("Images", req.files);
 
   if (!content) {
-    res.json({ message: "Content is required" }).sendStatus(201);
+    return res.status(400).json({ message: "Content is required" });
   }
-  if (!media) {
-    res.json({ message: "Media is needed to create a Post" }).sendStatus(201);
-  }
+
   const newPost = await post({
     content,
-    media: media || [],
+
     createdBy: userId,
+    images: req.files.map(
+      (file) => `${req.protocol}://${req.get("host")}/uploads/${file.filename}`
+    ),
   });
 
-  await newPost.save();
-  res.sendStatus(201).json({ message: "Post has been created" });
+  const data = await newPost.save();
+  res.status(201).json({
+    message: "Post has been created",
+    data: data,
+  });
 };
 
 // Delete a Post Logic
@@ -51,10 +62,14 @@ exports.editPost = async (req, res) => {
   const { content, media } = req.body;
   const updatedPost = {};
   if (content) updatedPost.content = content;
-  if (media) updatedPost.media = media;
-  await post.findByIdAndUpdate(id, updatedPost, { new: true });
 
-  res.json({ message: "Post has been updated" }).sendStatus(201);
+  const updated = await post.findByIdAndUpdate(id, updatedPost, { new: true });
+
+  if (updated) {
+    res.json({ message: "Post has been updated" }).sendStatus(201);
+  } else {
+    res.json({ message: "Some Error updating the post" }).sendStatus(201);
+  }
 };
 
 //Like the Post Logic
@@ -65,7 +80,7 @@ exports.likePost = async (req, res) => {
 
     const updatedPost = await post.findByIdAndUpdate(
       id,
-      { $addToSet: { likes: id } },
+      { $addToSet: { likes: req?.user?._id } },
       { new: true }
     );
 
@@ -75,7 +90,7 @@ exports.likePost = async (req, res) => {
 
     return res.status(200).json({
       message: "Post liked successfully",
-      post: updatedPost,
+      data: updatedPost,
     });
   } catch (error) {
     console.error("Error liking post:", error);
@@ -156,11 +171,8 @@ exports.follow = async (req, res) => {
 exports.unfollows = async (req, res) => {
   try {
     const { userId } = req.params;
-    console.log("Target userId:", userId);
-    console.log("Current user:", req.user?._id);
 
     const targetUser = await user.findById(userId);
-    console.log("Before unfollow, followers:", targetUser.followers);
 
     const unfollow = await user.findByIdAndUpdate(
       userId,
@@ -169,8 +181,6 @@ exports.unfollows = async (req, res) => {
       },
       { new: true }
     );
-
-    console.log("After unfollow, followers:", unfollow.followers);
 
     await user.findByIdAndUpdate(
       req.user?._id,
@@ -188,5 +198,39 @@ exports.unfollows = async (req, res) => {
   } catch (error) {
     console.error("Unfollow error:", error);
     return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+//Save all the message in mongo
+exports.saveMessage = async (req, res) => {
+  try {
+    const { sender, receiver, text, time, receiverName, senderName } = req.body;
+
+    const newMessage = new Message({
+      sender,
+      receiver,
+      text,
+      time,
+      receiverName,
+      senderName,
+    });
+    const saved = await newMessage.save();
+
+    res.status(201).json(saved);
+    // All good
+  } catch (err) {
+    console.error("Error saving message:", err); // For debugging
+    res.status(500).json({ error: "Error saving the message" });
+  }
+};
+
+//Get all messages
+exports.getMessage = async (req, res) => {
+  try {
+    const message = await Message.find().sort({ time: 1 });
+
+    res.json({ message: message });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch messages" });
   }
 };
